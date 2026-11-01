@@ -1,0 +1,25 @@
+{
+  "name": "Shagun Tracker",
+  "short_name": "Shagun",
+  "description": "Digital Wedding Gift & Cash Registry with Voice Commands and 3D Envelopes",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#C41E3A",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/currency/inr-500.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/currency/inr-500.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["finance", "lifestyle"],
+  "lang": "hi-IN",
+  "dir": "ltr"
+}

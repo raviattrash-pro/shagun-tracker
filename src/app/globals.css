@@ -1,0 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root, .dark {
+    --background: 222 40% 7%;
+    --foreground: 0 0% 100%;
+    --card: 222 41% 10%;
+    --card-foreground: 0 0% 98%;
+    --popover: 222 41% 10%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 168 83% 62%;
+    --secondary-foreground: 222 40% 7%;
+    --muted: 222 30% 14%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 222 30% 16%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 60 9.1% 97.8%;
+    --border: 220 30% 17%;
+    --input: 220 30% 17%;
+    --ring: 221 83% 53%;
+    --radius: 1rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    background-color: #0B0F19;
+    color-scheme: dark;
+  }
+
+  html.theme-neomorphic {
+    background-color: #E8EDF5;
+    color-scheme: light;
+  }
+
+  body {
+    background-color: #0B0F19;
+    color: #F8FAFC;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html.theme-neomorphic body {
+    background-color: #E8EDF5 !important;
+    color: #1E293B !important;
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@layer utilities {
+  /* Dribbble Neomorphism Soft UI Classes */
+  .neomorph-flat {
+    background: #E8EDF5;
+    box-shadow: 9px 9px 20px #cad4e2, -9px -9px 20px #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+  }
+
+  .neomorph-inset {
+    background: #E8EDF5;
+    box-shadow: inset 4px 4px 8px #cad4e2, inset -4px -4px 8px #ffffff;
+  }
+
+  .neomorph-btn {
+    background: #E8EDF5;
+    box-shadow: 6px 6px 14px #cad4e2, -6px -6px 14px #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .neomorph-btn:hover {
+    box-shadow: 8px 8px 18px #cad4e2, -8px -8px 18px #ffffff;
+    transform: translateY(-1px);
+  }
+
+  .neomorph-btn:active, .neomorph-btn.active {
+    box-shadow: inset 3px 3px 6px #cad4e2, inset -3px -3px 6px #ffffff;
+    transform: translateY(1px);
+  }
+
+  /* Wix Studio Floating & Glowing Animations */
+  @keyframes float-slow {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-12px) rotate(2deg);
+    }
+  }
+
+  @keyframes float-reverse {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(12px) rotate(-2deg);
+    }
+  }
+
+  @keyframes shine-coin {
+    0% {
+      filter: drop-shadow(0 0 10px rgba(230, 202, 101, 0.3));
+    }
+    50% {
+      filter: drop-shadow(0 0 25px rgba(230, 202, 101, 0.7));
+    }
+    100% {
+      filter: drop-shadow(0 0 10px rgba(230, 202, 101, 0.3));
+    }
+  }
+
+  .animate-float-slow {
+    animation: float-slow 6s ease-in-out infinite;
+  }
+
+  .animate-float-reverse {
+    animation: float-reverse 7s ease-in-out infinite;
+  }
+
+  .animate-shine-coin {
+    animation: shine-coin 4s ease-in-out infinite;
+  }
+
+  .text-gradient-shagun {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #C41E3A 0%, #D4AF37 100%);
+  }
+
+  .bg-gradient-shagun {
+    background-image: linear-gradient(135deg, #C41E3A 0%, #D4AF37 100%);
+  }
+
+  .bg-pattern-indian {
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4AF37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
