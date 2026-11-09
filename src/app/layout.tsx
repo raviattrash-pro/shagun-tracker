@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#C41E3A',
+  themeColor: '#8B1D2C',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -44,16 +44,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark" style={{ colorScheme: 'dark' }} suppressHydrationWarning>
+    <html lang="en" className="theme-traditional" style={{ colorScheme: 'light' }} suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${playfair.variable} font-sans antialiased min-h-screen bg-[#0B0F19] text-white flex flex-col`}
+        className={`${inter.variable} ${playfair.variable} font-sans antialiased min-h-screen flex flex-col transition-colors duration-300`}
       >
         <Providers>
           {/* Top Sticky Header Navigation */}
           <Header />
 
           {/* Main Content Area */}
-          <main className="flex-1 pb-20 md:pb-8 w-full bg-[#0B0F19]">
+          <main className="flex-1 pb-20 md:pb-8 w-full">
             {children}
           </main>
 

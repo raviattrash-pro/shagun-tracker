@@ -19,6 +19,7 @@ export type GiftType = 'CASH' | 'GIFT_ITEM' | 'BOTH';
 export type GuestSide = 'GROOM' | 'BRIDE' | 'MUTUAL' | 'OTHER';
 
 export type EnvelopeStyle =
+  | 'AMPLIFY_WOOD'
   | 'CLASSIC_RED'
   | 'ROYAL_GOLD'
   | 'FLORAL_PINK'
@@ -269,4 +270,33 @@ export interface CashDisplayData {
     count: number;
     subtotal: number;
   }[];
+}
+
+
+// ──────────────────────────────────────────
+// Wedding Gift Registry Types
+// ──────────────────────────────────────────
+
+export interface WeddingGiftRegistryItem {
+  id: string;
+  userId?: string | null;
+  title: string;
+  category: string;
+  suggestedStore?: string | null;
+  storeUrl?: string | null;
+  approxCost?: number | null;
+  claimedBy?: string | null;
+  claimedByPhone?: string | null;
+  status: 'AVAILABLE' | 'CLAIMED';
+  notes?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WeddingGiftRegistrySummary {
+  totalCount: number;
+  claimedCount: number;
+  availableCount: number;
+  totalValue: number;
+  claimedValue: number;
 }

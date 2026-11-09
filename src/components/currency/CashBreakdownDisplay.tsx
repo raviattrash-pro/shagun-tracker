@@ -5,7 +5,6 @@ import { CashBreakdown } from '@/types';
 import { formatCurrency } from '@/utils/format';
 import { CurrencyNote } from './CurrencyNote';
 import { CoinDisplay } from './CoinDisplay';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/card';
 
 interface CashBreakdownDisplayProps {
   breakdown: CashBreakdown;

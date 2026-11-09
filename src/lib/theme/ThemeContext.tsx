@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-export type AppTheme = 'dark' | 'light';
+export type AppTheme = 'traditional' | 'clay' | 'dark' | 'light';
 
 interface ThemeContextType {
   theme: AppTheme;
@@ -11,36 +11,46 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: 'dark',
+  theme: 'traditional',
   setTheme: () => {},
   toggleTheme: () => {},
 });
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setThemeState] = useState<AppTheme>('dark');
+  const [theme, setThemeState] = useState<AppTheme>('traditional');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     const saved = localStorage.getItem('shagun_theme') as AppTheme | null;
-    if (saved === 'light' || saved === 'dark') {
+    if (saved === 'traditional' || saved === 'clay' || saved === 'light' || saved === 'dark') {
       setThemeState(saved);
       applyTheme(saved);
     } else {
-      applyTheme('dark');
+      // Default to Traditional Bahi-Khata (offline notebook look)
+      setThemeState('traditional');
+      applyTheme('traditional');
     }
   }, []);
 
   const applyTheme = (t: AppTheme) => {
     if (typeof document === 'undefined') return;
     const root = document.documentElement;
-    if (t === 'light') {
-      root.classList.remove('dark');
+    root.classList.remove('dark', 'light', 'theme-neomorphic', 'theme-clay', 'theme-traditional');
+
+    if (t === 'traditional') {
+      root.classList.add('light', 'theme-traditional');
+      root.style.colorScheme = 'light';
+      root.style.backgroundColor = '#FDFCF7';
+    } else if (t === 'clay') {
+      root.classList.add('light', 'theme-clay');
+      root.style.colorScheme = 'light';
+      root.style.backgroundColor = '#FBF0EE';
+    } else if (t === 'light') {
       root.classList.add('light', 'theme-neomorphic');
       root.style.colorScheme = 'light';
       root.style.backgroundColor = '#E8EEF5';
     } else {
-      root.classList.remove('light', 'theme-neomorphic');
       root.classList.add('dark');
       root.style.colorScheme = 'dark';
       root.style.backgroundColor = '#0B0F19';
@@ -54,7 +64,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const toggleTheme = () => {
-    const next = theme === 'dark' ? 'light' : 'dark';
+    const next: AppTheme = theme === 'traditional' ? 'dark' : theme === 'dark' ? 'clay' : 'traditional';
     setTheme(next);
   };
 

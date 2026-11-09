@@ -6,15 +6,20 @@ import { GuestData } from '@/types';
 import { GuestCard } from '@/components/guest/GuestCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, Users, Sparkles } from 'lucide-react';
 import { VoiceSearchBar } from '@/components/voice/VoiceSearchBar';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useTheme } from '@/lib/theme/ThemeContext';
+import { cn } from '@/utils/cn';
 
 export default function GuestsPage() {
   const { t, language } = useLanguage();
+  const { theme } = useTheme();
   const [guests, setGuests] = useState<GuestData[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const isTraditional = theme === 'traditional';
 
   useEffect(() => {
     async function loadGuests() {
@@ -39,43 +44,48 @@ export default function GuestsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-white">
-      {/* Ambient Glows */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-10 left-1/4 w-[500px] h-[300px] bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute top-40 right-1/4 w-[400px] h-[300px] bg-cyan-500/10 rounded-full blur-3xl" />
-      </div>
-
+    <div
+      className={cn(
+        'min-h-screen transition-colors duration-300 font-sans',
+        isTraditional
+          ? 'bg-[#FDFCF7] text-stone-900'
+          : theme === 'clay'
+          ? 'bg-[#FBF0EE] text-slate-800'
+          : theme === 'dark'
+          ? 'bg-[#0B0F19] text-white'
+          : 'bg-[#E8EDF5] text-slate-800'
+      )}
+    >
       <div className="container mx-auto p-4 md:p-6 space-y-6 max-w-7xl">
         {/* Top breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-slate-400">
-          <Link href="/dashboard" className="hover:text-white font-semibold flex items-center gap-1 text-[#2563EB]">
-            <span>🏠 Dashboard</span>
+        <div className="flex items-center gap-2 text-xs text-stone-500 dark:text-slate-400">
+          <Link href="/dashboard" className="hover:underline font-semibold flex items-center gap-1 text-[#8B1D2C] dark:text-[#2563EB]">
+            <span>🏠 बही-खाता (Dashboard)</span>
           </Link>
           <span>/</span>
-          <span className="text-white font-medium">Guest Directory</span>
+          <span className="font-semibold text-stone-900 dark:text-white">रिश्तेदार सूची (Guest Directory)</span>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-[#1E2638]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-stone-200 dark:border-[#1E2638]">
           <div>
-            <h1 className="text-2xl md:text-3xl font-sans font-bold text-white">
-              {t('guestDirectoryTitle')} <span className="text-[#4EECD3] font-sans text-xl">{t('guestDirectoryHindiSubtitle')}</span>
+            <h1 className="text-2xl md:text-3xl font-serif font-black text-[#8B1D2C] dark:text-white">
+              रिश्तेदार व मेहमान सूची <span className="font-sans text-base text-stone-500 font-normal">({guests.length})</span>
             </h1>
-            <p className="text-xs md:text-sm text-slate-400 mt-0.5">
-              {t('guestDirectorySubtitle')}
+            <p className="text-xs md:text-sm text-stone-600 dark:text-slate-400 mt-0.5">
+              परिवार, रिश्तेदार (चाचा, मामा, बुआ, मौसी) एवं मित्रों की संपर्क सूची व कुल शगुन का हिसाब
             </p>
           </div>
 
           <div className="flex items-center gap-2">
             <Link href="/dashboard">
-              <Button variant="outline" size="sm" className="text-xs rounded-xl bg-[#0F1523] border-[#1E2638] text-slate-300 hover:text-white">
-                {t('dashboard')}
+              <Button variant="outline" size="sm" className="text-xs rounded-xl">
+                बही-खाता
               </Button>
             </Link>
             <Link href="/guests/new">
-              <Button size="sm" className="bg-[#2563EB] hover:bg-blue-600 text-white gap-1.5 shadow-lg shadow-blue-600/30 font-bold rounded-xl text-xs">
+              <Button size="sm" className="bg-[#8B1D2C] hover:bg-[#731522] text-white gap-1.5 shadow-sm font-bold rounded-xl text-xs">
                 <UserPlus className="h-4 w-4" />
-                <span>{t('addGuestBtn')}</span>
+                <span>+ नया रिश्तेदार जोड़ें</span>
               </Button>
             </Link>
           </div>
@@ -85,20 +95,20 @@ export default function GuestsPage() {
         <VoiceSearchBar
           value={search}
           onChange={setSearch}
-          placeholder={t('searchGuestPlaceholder')}
+          placeholder="रिश्तेदार बोलकर खोजें (उदा. मामाजी, चाचाजी, प्रिया मौसी)..."
           resultCount={guests.length}
-          resultLabel="relatives"
+          resultLabel="रिश्तेदार"
         />
 
         {loading ? (
-          <div className="text-center py-20 text-slate-400">Loading guests...</div>
+          <div className="text-center py-20 text-stone-400">रिश्तेदार सूची लोड हो रही है...</div>
         ) : guests.length === 0 ? (
-          <div className="text-center py-20 border border-[#1E2638] rounded-3xl bg-[#0F1523] text-slate-400 space-y-3">
-            <p className="font-semibold text-white">No relatives found</p>
-            <p className="text-xs">Add a new guest or try another search term</p>
+          <div className="text-center py-20 border-2 border-dashed border-stone-200 rounded-3xl bg-white text-stone-500 space-y-3">
+            <p className="font-serif font-bold text-lg text-stone-800">कोई रिश्तेदार नहीं मिले</p>
+            <p className="text-xs">नया नाम जोड़ें या दूसरा नाम खोजें</p>
             <Link href="/guests/new">
-              <Button size="sm" className="bg-[#2563EB] hover:bg-blue-600 text-white rounded-xl font-bold">
-                Add First Guest
+              <Button size="sm" className="bg-[#8B1D2C] hover:bg-[#731522] text-white rounded-xl font-bold">
+                + पहला रिश्तेदार जोड़ें
               </Button>
             </Link>
           </div>

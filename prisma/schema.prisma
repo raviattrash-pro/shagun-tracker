@@ -178,3 +178,26 @@ model Reciprocity {
   @@index([status])
   @@map("reciprocity")
 }
+
+
+// ──────────────────────────────────────────
+// Wedding Gift Registry / Wishlist (शादी उपहार सूची)
+// ──────────────────────────────────────────
+
+model WeddingGiftItem {
+  id             String   @id @default(cuid())
+  userId         String?
+  title          String
+  category       String   @default("Home")
+  suggestedStore String?
+  storeUrl       String?
+  approxCost     Float?
+  claimedBy      String?
+  claimedByPhone String?
+  status         String   @default("AVAILABLE") // "AVAILABLE" or "CLAIMED"
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("wedding_gift_items")
+}

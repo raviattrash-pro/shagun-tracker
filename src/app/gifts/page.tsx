@@ -8,15 +8,20 @@ import { GiftCard } from '@/components/gift/GiftCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Grid, List, Download, Users } from 'lucide-react';
+import { Plus, Grid, List, Download, Users, BookOpen } from 'lucide-react';
 import { VoiceSearchBar } from '@/components/voice/VoiceSearchBar';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useTheme } from '@/lib/theme/ThemeContext';
+import { cn } from '@/utils/cn';
 
 export default function GiftsPage() {
   const { t, language } = useLanguage();
+  const { theme } = useTheme();
   const [gifts, setGifts] = useState<GiftData[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const isTraditional = theme === 'traditional';
 
   useEffect(() => {
     async function loadGifts() {
@@ -60,108 +65,113 @@ export default function GiftsPage() {
   }, [gifts, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-white">
-      {/* Ambient Glows */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-10 left-1/4 w-[500px] h-[300px] bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute top-40 right-1/4 w-[400px] h-[300px] bg-cyan-500/10 rounded-full blur-3xl" />
-      </div>
-
+    <div
+      className={cn(
+        'min-h-screen transition-colors duration-300 font-sans',
+        isTraditional
+          ? 'bg-[#FDFCF7] text-stone-900'
+          : theme === 'clay'
+          ? 'bg-[#FBF0EE] text-slate-800'
+          : theme === 'dark'
+          ? 'bg-[#0B0F19] text-white'
+          : 'bg-[#E8EDF5] text-slate-800'
+      )}
+    >
       <div className="container mx-auto p-4 md:p-6 space-y-6 max-w-7xl">
         {/* Top breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-slate-400">
-          <Link href="/dashboard" className="hover:text-white font-semibold flex items-center gap-1 text-[#2563EB]">
-            <span>🏠 Dashboard</span>
+        <div className="flex items-center gap-2 text-xs text-stone-500 dark:text-slate-400">
+          <Link href="/dashboard" className="hover:underline font-semibold flex items-center gap-1 text-[#8B1D2C] dark:text-[#2563EB]">
+            <span>🏠 बही-खाता (Dashboard)</span>
           </Link>
           <span>/</span>
-          <span className="text-white font-medium">Shagun Registry</span>
+          <span className="font-semibold text-stone-900 dark:text-white">शगुन व लिफाफे (Envelopes)</span>
         </div>
 
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-[#1E2638]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-stone-200 dark:border-[#1E2638]">
           <div>
-            <h1 className="text-2xl md:text-3xl font-sans font-bold text-white">
-              {t('giftRegistryTitle')} <span className="text-[#4EECD3] font-sans text-xl">{t('giftRegistryHindiSubtitle')}</span>
+            <h1 className="text-2xl md:text-3xl font-serif font-black text-[#8B1D2C] dark:text-white">
+              शगुन लिफाफे व उपहार रजिस्टर <span className="font-sans text-base text-stone-500 font-normal">({filteredGifts.length})</span>
             </h1>
-            <p className="text-xs md:text-sm text-slate-400 mt-0.5">
-              {t('giftRegistrySubtitle')}
+            <p className="text-xs md:text-sm text-stone-600 dark:text-slate-400 mt-0.5">
+              मेहमानों द्वारा भेंट किए गए 3D लिफाफे (Amplify Wood / Classic Wax Seal) व उपहार
             </p>
           </div>
 
           <div className="flex items-center gap-2">
             <Link href="/dashboard">
-              <Button variant="outline" size="sm" className="text-xs rounded-xl bg-[#0F1523] border-[#1E2638] text-slate-300 hover:text-white">
-                {t('dashboard')}
+              <Button variant="outline" size="sm" className="text-xs rounded-xl">
+                बही-खाता
               </Button>
             </Link>
             <a href="/api/export?format=excel" download>
-              <Button variant="outline" size="sm" className="text-xs gap-1.5 rounded-xl bg-[#0F1523] border-[#1E2638] text-slate-300 hover:text-white">
-                <Download className="h-4 w-4 text-[#4EECD3]" />
-                <span>{t('exportExcel')}</span>
+              <Button variant="outline" size="sm" className="text-xs gap-1.5 rounded-xl">
+                <Download className="h-4 w-4 text-emerald-600" />
+                <span>Excel</span>
               </Button>
             </a>
             <Link href="/gifts/new">
-              <Button size="sm" className="bg-[#2563EB] hover:bg-blue-600 text-white text-xs gap-1.5 shadow-lg shadow-blue-600/30 font-bold rounded-xl">
+              <Button size="sm" className="bg-[#8B1D2C] hover:bg-[#731522] text-white text-xs gap-1.5 shadow-sm font-bold rounded-xl">
                 <Plus className="h-4 w-4" />
-                <span>{t('addShagun')}</span>
+                <span>+ नया शगुन</span>
               </Button>
             </Link>
           </div>
         </div>
 
-      {/* Relative Audio & Text Search Bar */}
-      <VoiceSearchBar
-        value={searchQuery}
-        onChange={setSearchQuery}
-        placeholder="Search relative by voice or text (बोलकर ढूँढें या नाम/रिश्ता लिखें)..."
-        resultCount={filteredGifts.length}
-        resultLabel="envelopes"
-      />
+        {/* Relative Audio & Text Search Bar */}
+        <VoiceSearchBar
+          value={searchQuery}
+          onChange={setSearchQuery}
+          placeholder="बोलकर खोजें या नाम/रिश्ता लिखें (उदा. मामाजी, चाचाजी, प्रिया मौसी)..."
+          resultCount={filteredGifts.length}
+          resultLabel="लिफाफे"
+        />
 
-      {/* Tabs View */}
-      <Tabs defaultValue="envelopes" className="space-y-6">
-        <div className="flex items-center justify-between">
-          <TabsList>
-            <TabsTrigger value="envelopes" className="gap-2">
-              <Grid className="h-4 w-4" />
-              <span>Interactive Envelopes ({filteredGifts.length})</span>
-            </TabsTrigger>
-            <TabsTrigger value="list" className="gap-2">
-              <List className="h-4 w-4" />
-              <span>Table / List View</span>
-            </TabsTrigger>
-          </TabsList>
-        </div>
+        {/* Tabs View */}
+        <Tabs defaultValue="envelopes" className="space-y-6">
+          <div className="flex items-center justify-between">
+            <TabsList className="bg-stone-100 p-1 border">
+              <TabsTrigger value="envelopes" className="gap-2 text-xs font-bold">
+                <Grid className="h-4 w-4" />
+                <span>3D लिफाफे (Interactive Envelopes)</span>
+              </TabsTrigger>
+              <TabsTrigger value="list" className="gap-2 text-xs font-bold">
+                <List className="h-4 w-4" />
+                <span>सूची (List View)</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-        <TabsContent value="envelopes">
-          {loading ? (
-            <div className="text-center py-16 text-muted-foreground">Loading envelopes...</div>
-          ) : filteredGifts.length === 0 ? (
-            <div className="text-center py-16 border rounded-2xl bg-card text-muted-foreground space-y-3">
-              <p className="text-base font-semibold">No relative found matching "{searchQuery}"</p>
-              <p className="text-xs">Try searching by first name, relationship, or city</p>
-              <Button variant="outline" size="sm" onClick={() => setSearchQuery('')}>
-                Clear Search
-              </Button>
-            </div>
-          ) : (
-            <EnvelopeGrid gifts={filteredGifts} />
-          )}
-        </TabsContent>
+          <TabsContent value="envelopes">
+            {loading ? (
+              <div className="text-center py-16 text-stone-400">लिफाफे लोड हो रहे हैं...</div>
+            ) : filteredGifts.length === 0 ? (
+              <div className="text-center py-16 border-2 border-dashed border-stone-200 rounded-3xl bg-white text-stone-500 space-y-3">
+                <p className="text-base font-serif font-bold text-stone-800">कोई लिफाफा नहीं मिला</p>
+                <p className="text-xs">रिश्तेदार का नाम खोजें या नया शगुन दर्ज करें</p>
+                <Button variant="outline" size="sm" onClick={() => setSearchQuery('')}>
+                  खोज साफ़ करें
+                </Button>
+              </div>
+            ) : (
+              <EnvelopeGrid gifts={filteredGifts} />
+            )}
+          </TabsContent>
 
-        <TabsContent value="list" className="space-y-3">
-          {loading ? (
-            <div className="text-center py-16 text-muted-foreground">Loading gifts...</div>
-          ) : filteredGifts.length === 0 ? (
-            <div className="text-center py-16 border rounded-xl bg-card text-muted-foreground">
-              No matching records found.
-            </div>
-          ) : (
-            filteredGifts.map((g) => <GiftCard key={g.id} gift={g} />)
-          )}
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="list" className="space-y-3">
+            {loading ? (
+              <div className="text-center py-16 text-stone-400">सूची लोड हो रही है...</div>
+            ) : filteredGifts.length === 0 ? (
+              <div className="text-center py-16 border rounded-xl bg-white text-stone-500">
+                कोई प्रविष्टि नहीं मिली।
+              </div>
+            ) : (
+              filteredGifts.map((g) => <GiftCard key={g.id} gift={g} />)
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
-  </div>
   );
 }

@@ -4,19 +4,24 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ReciprocityData } from '@/types';
 import { formatCurrency, formatDate } from '@/utils/format';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RefreshCw, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
+import { RefreshCw, Clock, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useTheme } from '@/lib/theme/ThemeContext';
+import { cn } from '@/utils/cn';
 
 export default function ReciprocityPage() {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
+  const { theme } = useTheme();
   const [items, setItems] = useState<ReciprocityData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const loadData = async () => {
+  const isTraditional = theme === 'traditional';
+
+  async function loadData() {
     try {
       const res = await fetch('/api/reciprocity');
       const data = await res.json();
@@ -28,7 +33,7 @@ export default function ReciprocityPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
     loadData();
@@ -36,7 +41,7 @@ export default function ReciprocityPage() {
 
   const handleMarkReturned = async (id: string, amount: number) => {
     try {
-      const res = await fetch('/api/reciprocity', {
+      const res = await fetch(`/api/reciprocity`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -62,132 +67,139 @@ export default function ReciprocityPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-white">
-      {/* Ambient Glows */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-10 left-1/4 w-[500px] h-[300px] bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute top-40 right-1/4 w-[400px] h-[300px] bg-cyan-500/10 rounded-full blur-3xl" />
-      </div>
-
+    <div
+      className={cn(
+        'min-h-screen transition-colors duration-300 font-sans',
+        isTraditional
+          ? 'bg-[#FDFCF7] text-stone-900'
+          : theme === 'clay'
+          ? 'bg-[#FBF0EE] text-slate-800'
+          : theme === 'dark'
+          ? 'bg-[#0B0F19] text-white'
+          : 'bg-[#E8EDF5] text-slate-800'
+      )}
+    >
       <div className="container mx-auto p-4 md:p-6 space-y-6 max-w-6xl">
         {/* Top breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-slate-400">
-          <Link href="/dashboard" className="hover:text-white font-semibold flex items-center gap-1 text-[#2563EB]">
-            <span>🏠 Dashboard</span>
+        <div className="flex items-center gap-2 text-xs text-stone-500 dark:text-slate-400">
+          <Link href="/dashboard" className="hover:underline font-semibold flex items-center gap-1 text-[#8B1D2C] dark:text-[#2563EB]">
+            <span>🏠 बही-खाता (Dashboard)</span>
           </Link>
           <span>/</span>
-          <span className="text-white font-medium">Reciprocity Ledger</span>
+          <span className="font-semibold text-stone-900 dark:text-white">लेन-देन डायरी (Reciprocity Ledger)</span>
         </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-[#1E2638]">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-sans font-bold flex items-center gap-2 text-white">
-            <span>{t('reciprocityTitle')} <span className="text-[#4EECD3] font-sans text-xl">{t('reciprocityHindiSubtitle')}</span></span>
-            <RefreshCw className="h-5 w-5 text-[#4EECD3]" />
-          </h1>
-          <p className="text-xs md:text-sm text-slate-400 mt-0.5">
-            {t('reciprocitySubtitle')}
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-stone-200 dark:border-[#1E2638]">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-serif font-black text-[#8B1D2C] dark:text-white flex items-center gap-2">
+              <span>लेन-देन व वापसी शगुन डायरी</span>
+              <RefreshCw className="h-5 w-5 text-amber-700" />
+            </h1>
+            <p className="text-xs md:text-sm text-stone-600 dark:text-slate-400 mt-0.5">
+              पारंपरिक नियम: रिश्तेदारों द्वारा दिए गए शगुन का हिसाब रखें ताकि उनके समारोह में शुभ शगुन (+₹1 जोड़कर) लौटाया जा सके
+            </p>
+          </div>
+
+          <div className="bg-amber-100/70 border border-amber-300/80 rounded-2xl px-4 py-2 text-right">
+            <span className="text-[11px] text-amber-900 block uppercase font-bold tracking-wide">
+              कुल भविष्य देय (Pending)
+            </span>
+            <span className="text-xl font-serif font-black text-[#8B1D2C]">
+              {formatCurrency(totalPending)}
+            </span>
+          </div>
         </div>
 
-        <div className="bg-[#131B2E] border border-[#1E2638] rounded-2xl px-4 py-2 text-right">
-          <span className="text-[11px] text-slate-400 block uppercase font-semibold">
-            {t('pendingObligations')}
-          </span>
-          <span className="text-xl font-bold text-[#E6CA65]">
-            {formatCurrency(totalPending)}
-          </span>
-        </div>
-      </div>
+        <Tabs defaultValue="pending" className="space-y-6">
+          <TabsList className="rounded-2xl p-1 bg-stone-100 border">
+            <TabsTrigger value="pending" className="gap-2 rounded-xl font-bold text-xs">
+              <Clock className="h-4 w-4" />
+              <span>लौटाना बाकी है ({pending.length})</span>
+            </TabsTrigger>
+            <TabsTrigger value="completed" className="gap-2 rounded-xl font-bold text-xs">
+              <CheckCircle2 className="h-4 w-4" />
+              <span>सफलतापूर्वक लौटाया गया ({completed.length})</span>
+            </TabsTrigger>
+          </TabsList>
 
-      <Tabs defaultValue="pending" className="space-y-6">
-        <TabsList className="rounded-2xl p-1 bg-muted/60">
-          <TabsTrigger value="pending" className="gap-2 rounded-xl font-bold">
-            <Clock className="h-4 w-4" />
-            <span>{t('pendingTab')} ({pending.length})</span>
-          </TabsTrigger>
-          <TabsTrigger value="completed" className="gap-2 rounded-xl font-bold">
-            <CheckCircle2 className="h-4 w-4" />
-            <span>{t('completedTab')} ({completed.length})</span>
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="pending" className="space-y-3">
-          {loading ? (
-            <div className="text-center py-16 text-muted-foreground">Loading records...</div>
-          ) : pending.length === 0 ? (
-            <div className="text-center py-16 border rounded-xl bg-card text-muted-foreground">
-              All reciprocal gifts are settled! 🎉
-            </div>
-          ) : (
-            pending.map((item) => (
-              <Card key={item.id} className="hover:shadow-sm transition">
-                <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <TabsContent value="pending" className="space-y-3">
+            {loading ? (
+              <div className="text-center py-16 text-stone-400">रिकॉर्ड लोड हो रहे हैं...</div>
+            ) : pending.length === 0 ? (
+              <div className="text-center py-16 border rounded-2xl bg-white text-stone-500">
+                सभी वापसी शगुन चुकता हैं! 🎉
+              </div>
+            ) : (
+              pending.map((item) => (
+                <div
+                  key={item.id}
+                  className="rounded-2xl border border-stone-200 bg-white p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs hover:border-[#8B1D2C]/30 transition"
+                >
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="font-semibold text-base">
+                      <h4 className="font-bold text-base text-stone-900">
                         {item.guest?.name}
                       </h4>
                       {item.guest?.relation && (
-                        <Badge variant="outline" className="text-[10px] capitalize">
+                        <span className="text-[10px] uppercase font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded-md border border-amber-300">
                           {item.guest.relation.replace('_', ' ')}
-                        </Badge>
+                        </span>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Received at {item.originalGift?.event?.title || 'Wedding'} • {formatDate(item.createdAt)}
+                    <p className="text-xs text-stone-500 mt-0.5">
+                      प्राप्त समारोह: {item.originalGift?.event?.title || 'विवाह समारोह'} • {formatDate(item.createdAt)}
                     </p>
-                    <p className="text-sm font-medium text-emerald-600 mt-1">
-                      Received: {formatCurrency(Number(item.suggestedAmount || 0))}
+                    <p className="text-sm font-serif font-black text-emerald-800 mt-1">
+                      हमें प्राप्त शगुन: {formatCurrency(Number(item.suggestedAmount || 0))}
                     </p>
                   </div>
 
                   <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <Button
-                      size="sm"
+                    <button
+                      type="button"
                       onClick={() => {
                         const amount = prompt(
-                          `Enter returned amount for ${item.guest?.name}:`,
-                          String(item.suggestedAmount || 0)
+                          `${item.guest?.name} को कितना शगुन वापस दिया (₹):`,
+                          String(Number(item.suggestedAmount || 0) + 1)
                         );
                         if (amount) handleMarkReturned(item.id, Number(amount));
                       }}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs w-full sm:w-auto"
+                      className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-xs w-full sm:w-auto"
                     >
-                      Mark Returned (वापस दिया)
-                    </Button>
+                      वापस दिया दर्ज करें (Mark Returned)
+                    </button>
                   </div>
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </TabsContent>
+                </div>
+              ))
+            )}
+          </TabsContent>
 
-        <TabsContent value="completed" className="space-y-3">
-          {completed.length === 0 ? (
-            <div className="text-center py-16 border rounded-xl bg-card text-muted-foreground">
-              No completed returns recorded yet.
-            </div>
-          ) : (
-            completed.map((item) => (
-              <Card key={item.id} className="opacity-90">
-                <CardContent className="p-4 flex items-center justify-between gap-4">
+          <TabsContent value="completed" className="space-y-3">
+            {completed.length === 0 ? (
+              <div className="text-center py-16 border rounded-xl bg-white text-stone-500">
+                अभी तक कोई पूर्ण वापसी प्रविष्टि नहीं है।
+              </div>
+            ) : (
+              completed.map((item) => (
+                <div
+                  key={item.id}
+                  className="rounded-2xl border border-stone-200 bg-stone-50 p-4 flex items-center justify-between gap-4"
+                >
                   <div>
-                    <h4 className="font-semibold text-sm">{item.guest?.name}</h4>
-                    <p className="text-xs text-muted-foreground">
-                      Originally gave: {formatCurrency(Number(item.suggestedAmount || 0))} • Returned: {formatCurrency(Number(item.actualAmount || 0))}
+                    <h4 className="font-bold text-sm text-stone-900">{item.guest?.name}</h4>
+                    <p className="text-xs text-stone-500">
+                      मूल शगुन: {formatCurrency(Number(item.suggestedAmount || 0))} • वापस लौटाया: {formatCurrency(Number(item.actualAmount || 0))}
                     </p>
                   </div>
-                  <Badge variant="success" className="text-xs">
-                    Returned
-                  </Badge>
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </TabsContent>
-      </Tabs>
+                  <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-300">
+                    ✓ लौटाया गया
+                  </span>
+                </div>
+              ))
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
-  </div>
   );
 }

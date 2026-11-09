@@ -113,6 +113,15 @@ export const ALL_DENOMINATIONS = [...CURRENCY_NOTES, ...CURRENCY_COINS];
 // ──────────────────────────────────────────
 
 export const ENVELOPE_STYLES: Record<EnvelopeStyle, EnvelopeStyleConfig> = {
+  AMPLIFY_WOOD: {
+    name: 'Amplify Teak Wood & Golden Light',
+    bodyColor: '#5C3317',
+    flapColor: '#4A2511',
+    sealColor: '#F59E0B',
+    textColor: '#FFF8DC',
+    borderColor: '#783E1A',
+    gradient: 'linear-gradient(180deg, #783E1A 0%, #4A2511 50%, #2A1408 100%)',
+  },
   CLASSIC_RED: {
     name: 'Burgundy Velvet',
     bodyColor: '#75182A',
