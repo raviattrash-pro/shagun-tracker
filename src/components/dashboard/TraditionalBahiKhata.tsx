@@ -26,10 +26,13 @@ import {
   Check,
   X,
   Mic,
+  Pencil,
+  Trash2,
 } from 'lucide-react';
 import { GiftData, ReciprocityData, WeddingGiftRegistryItem, WeddingGiftRegistrySummary } from '@/types';
 import { formatCurrency, getInitials } from '@/utils/format';
 import { AmplifyWoodEnvelope } from '@/components/envelope/AmplifyWoodEnvelope';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import confetti from 'canvas-confetti';
 import { cn } from '@/utils/cn';
 
@@ -53,6 +56,8 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
   isDemo,
 }) => {
   const router = useRouter();
+  const { language } = useLanguage();
+  const isHi = language === 'hi';
 
   // Active Ledger Tab:
   // 'shagun' = Cash Shagun Ledger
@@ -92,6 +97,20 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
   const [newItemNotes, setNewItemNotes] = useState('');
   const [submittingNewItem, setSubmittingNewItem] = useState(false);
 
+  // Edit Item in Registry Modal State
+  const [editingItem, setEditingItem] = useState<WeddingGiftRegistryItem | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editCategory, setEditCategory] = useState('Home');
+  const [editStore, setEditStore] = useState('');
+  const [editStoreUrl, setEditStoreUrl] = useState('');
+  const [editCost, setEditCost] = useState('');
+  const [editNotes, setEditNotes] = useState('');
+  const [editStatus, setEditStatus] = useState<'AVAILABLE' | 'CLAIMED'>('AVAILABLE');
+  const [editClaimedBy, setEditClaimedBy] = useState('');
+  const [editClaimedByPhone, setEditClaimedByPhone] = useState('');
+  const [submittingEdit, setSubmittingEdit] = useState(false);
+  const [deletingItem, setDeletingItem] = useState(false);
+
   // Envelope Inspection Modal
   const [inspectingGift, setInspectingGift] = useState<GiftData | null>(null);
 
@@ -117,6 +136,104 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
   useEffect(() => {
     loadRegistry();
   }, []);
+
+  // Listen to URL query params (e.g. /dashboard?tab=registry)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab');
+      if (tab === 'registry') {
+        setActiveTab('registry');
+      } else if (tab === 'reciprocity') {
+        setActiveTab('reciprocity');
+      } else if (tab === 'physicalGifts') {
+        setActiveTab('physicalGifts');
+      }
+    }
+  }, []);
+
+  // Escape key handler for all modals
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setInspectingGift(null);
+        setClaimingItem(null);
+        setShowAddRegistryModal(false);
+        setEditingItem(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const openEditModal = (item: WeddingGiftRegistryItem) => {
+    setEditingItem(item);
+    setEditTitle(item.title || '');
+    setEditCategory(item.category || 'Home');
+    setEditStore(item.suggestedStore || '');
+    setEditStoreUrl(item.storeUrl || '');
+    setEditCost(item.approxCost ? String(item.approxCost) : '');
+    setEditNotes(item.notes || '');
+    setEditStatus(item.status);
+    setEditClaimedBy(item.claimedBy || '');
+    setEditClaimedByPhone(item.claimedByPhone || '');
+  };
+
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingItem || !editTitle.trim()) return;
+    setSubmittingEdit(true);
+    try {
+      const res = await fetch('/api/wedding-gifts', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editingItem.id,
+          title: editTitle.trim(),
+          category: editCategory.trim(),
+          suggestedStore: editStore.trim() || null,
+          storeUrl: editStoreUrl.trim() || null,
+          approxCost: editCost ? Number(editCost) : null,
+          notes: editNotes.trim() || null,
+          status: editStatus,
+          claimedBy: editStatus === 'CLAIMED' ? (editClaimedBy.trim() || 'Relative') : null,
+          claimedByPhone: editStatus === 'CLAIMED' ? (editClaimedByPhone.trim() || null) : null,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setEditingItem(null);
+        await loadRegistry();
+      } else {
+        alert(data.error || 'Failed to update gift');
+      }
+    } catch (err) {
+      alert('Error updating gift');
+    } finally {
+      setSubmittingEdit(false);
+    }
+  };
+
+  const handleDeleteItem = async (id: string, title: string) => {
+    if (!confirm(isHi ? `क्या आप वाकई "${title}" को उपहार सूची से हटाना चाहते हैं?` : `Are you sure you want to delete "${title}"?`)) return;
+    setDeletingItem(true);
+    try {
+      const res = await fetch(`/api/wedding-gifts?id=${id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (data.success) {
+        setEditingItem(null);
+        await loadRegistry();
+      } else {
+        alert(data.error || 'Failed to delete gift');
+      }
+    } catch (err) {
+      alert('Error deleting gift');
+    } finally {
+      setDeletingItem(false);
+    }
+  };
 
   // Filtered Cash Shagun gifts
   const cashGifts = useMemo(() => {
@@ -784,26 +901,38 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                               {item.notes || '—'}
                             </td>
 
-                            {/* Live Action: Claim or Unclaim */}
+                            {/* Live Action: Claim or Unclaim + Edit Option */}
                             <td className="py-3.5 px-3 text-center">
-                              {isAvailable ? (
+                              <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                                {isAvailable ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => setClaimingItem(item)}
+                                    className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition flex items-center justify-center gap-1"
+                                  >
+                                    <span>{isHi ? 'मैं लाऊँगा/गी' : 'Claim'}</span>
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleUnclaim(item.id, item.title)}
+                                    className="text-[11px] font-semibold text-stone-500 hover:text-rose-600 underline"
+                                    title="Release claim so others can bring"
+                                  >
+                                    {isHi ? 'नाम हटाएं' : 'Unclaim'}
+                                  </button>
+                                )}
+
+                                {/* Edit Button Requested by User */}
                                 <button
                                   type="button"
-                                  onClick={() => setClaimingItem(item)}
-                                  className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition flex items-center justify-center gap-1 mx-auto"
+                                  onClick={() => openEditModal(item)}
+                                  className="p-1.5 rounded-lg border border-stone-200 text-stone-600 hover:text-[#8B1D2C] hover:bg-amber-50 hover:border-amber-300 transition"
+                                  title={isHi ? 'उपहार विवरण बदलें (Edit)' : 'Edit gift details'}
                                 >
-                                  <span>मैं लाऊँगा/गी</span>
+                                  <Pencil className="h-3.5 w-3.5" />
                                 </button>
-                              ) : (
-                                <button
-                                  type="button"
-                                  onClick={() => handleUnclaim(item.id, item.title)}
-                                  className="text-[11px] font-semibold text-stone-400 hover:text-rose-600 underline"
-                                  title="Release claim so others can bring"
-                                >
-                                  नाम हटाएं (Unclaim)
-                                </button>
-                              )}
+                              </div>
                             </td>
                           </tr>
                         );
@@ -1153,17 +1282,248 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
       {/* MODAL 3: ENVELOPE INSPECTION (Amplify Teak Wood Animation)     */}
       {/* ───────────────────────────────────────────────────────────── */}
       {inspectingGift && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4">
-          <div className="relative max-w-md w-full">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200"
+          onClick={() => setInspectingGift(null)}
+        >
+          <div
+            className="relative max-w-md w-full my-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Dedicated Top Floating Close Button - Visible at any scroll */}
             <button
               type="button"
               onClick={() => setInspectingGift(null)}
-              className="absolute -top-10 right-0 text-white hover:text-amber-300 p-1 font-bold text-sm flex items-center gap-1"
+              className="absolute -top-3 -right-3 z-50 w-10 h-10 rounded-full bg-stone-900 hover:bg-black text-white flex items-center justify-center shadow-2xl border-2 border-white/40 transition hover:scale-110 cursor-pointer"
+              aria-label="Close"
+              title="बंद करें (Close)"
             >
-              <span>बंद करें</span>
-              <X className="h-5 w-5" />
+              <X className="h-5 w-5 stroke-[2.5]" />
             </button>
-            <AmplifyWoodEnvelope gift={inspectingGift} headline="SHAGUN" />
+
+            <AmplifyWoodEnvelope
+              gift={inspectingGift}
+              headline="SHAGUN"
+              onClose={() => setInspectingGift(null)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* MODAL 4: EDIT REGISTRY ITEM (Requested by User)               */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {editingItem && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 overflow-y-auto animate-in fade-in"
+          onClick={() => setEditingItem(null)}
+        >
+          <div
+            className="relative max-w-md w-full bg-white rounded-3xl p-6 shadow-2xl border-2 border-[#8B1D2C]/40 space-y-4 my-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center text-amber-800">
+                  <Pencil className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="font-serif font-black text-base text-[#8B1D2C]">
+                    {isHi ? 'उपहार विवरण बदलें' : 'Edit Wedding Gift'}
+                  </h3>
+                  <p className="text-[11px] text-stone-500">
+                    {isHi ? 'शादी उपहार सूची की जानकारी अपडेट करें' : 'Update registry wishlist details'}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingItem(null)}
+                className="text-stone-400 hover:text-stone-700 p-1 rounded-lg"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="space-y-3.5 text-xs font-sans">
+              <div>
+                <label className="block text-stone-700 font-bold mb-1">
+                  {isHi ? 'उपहार / वस्तु का नाम *' : 'Gift Item Title *'}
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B1D2C]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-bold mb-1">
+                    {isHi ? 'श्रेणी (Category)' : 'Category'}
+                  </label>
+                  <select
+                    value={editCategory}
+                    onChange={(e) => setEditCategory(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B1D2C]"
+                  >
+                    <option value="Home">{isHi ? 'गृहस्थी (Home)' : 'Home'}</option>
+                    <option value="Kitchen">{isHi ? 'रसोई (Kitchen)' : 'Kitchen'}</option>
+                    <option value="Electronics">{isHi ? 'इलेक्ट्रॉनिक्स (Electronics)' : 'Electronics'}</option>
+                    <option value="Gold/Jewellery">{isHi ? 'सोना/चाँदी (Jewellery)' : 'Gold & Jewellery'}</option>
+                    <option value="Decor">{isHi ? 'सजावट (Decor)' : 'Decor'}</option>
+                    <option value="Other">{isHi ? 'अन्य (Other)' : 'Other'}</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-stone-700 font-bold mb-1">
+                    {isHi ? 'अनुमानित मूल्य (₹)' : 'Approx Cost (₹)'}
+                  </label>
+                  <input
+                    type="number"
+                    value={editCost}
+                    onChange={(e) => setEditCost(e.target.value)}
+                    placeholder="7500"
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B1D2C]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-bold mb-1">
+                    {isHi ? 'दुकान का नाम' : 'Store Name'}
+                  </label>
+                  <input
+                    type="text"
+                    value={editStore}
+                    onChange={(e) => setEditStore(e.target.value)}
+                    placeholder="Amazon / Croma"
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B1D2C]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-bold mb-1">
+                    {isHi ? 'वेबसाइट लिंक (URL)' : 'Product URL'}
+                  </label>
+                  <input
+                    type="url"
+                    value={editStoreUrl}
+                    onChange={(e) => setEditStoreUrl(e.target.value)}
+                    placeholder="https://..."
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B1D2C]"
+                  />
+                </div>
+              </div>
+
+              {/* Status & Claimed By */}
+              <div className="p-3 rounded-2xl bg-stone-50 border border-stone-200 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-stone-800">
+                    {isHi ? 'बुकिंग स्थिति (Status)' : 'Claim Status'}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setEditStatus('AVAILABLE')}
+                      className={cn(
+                        'px-2.5 py-1 rounded-lg text-[10px] font-bold border transition',
+                        editStatus === 'AVAILABLE'
+                          ? 'bg-emerald-600 text-white border-emerald-600'
+                          : 'bg-white text-stone-600 border-stone-300'
+                      )}
+                    >
+                      {isHi ? '🟢 उपलब्ध' : 'Available'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditStatus('CLAIMED')}
+                      className={cn(
+                        'px-2.5 py-1 rounded-lg text-[10px] font-bold border transition',
+                        editStatus === 'CLAIMED'
+                          ? 'bg-amber-600 text-white border-amber-600'
+                          : 'bg-white text-stone-600 border-stone-300'
+                      )}
+                    >
+                      {isHi ? '✓ बुक है' : 'Claimed'}
+                    </button>
+                  </div>
+                </div>
+
+                {editStatus === 'CLAIMED' && (
+                  <div className="grid grid-cols-2 gap-2 pt-1">
+                    <div>
+                      <label className="block text-stone-600 text-[10px] font-semibold mb-0.5">
+                        {isHi ? 'कौन ला रहा है? (Claimant)' : 'Claimed By'}
+                      </label>
+                      <input
+                        type="text"
+                        value={editClaimedBy}
+                        onChange={(e) => setEditClaimedBy(e.target.value)}
+                        placeholder={isHi ? 'उदा. सुनीता बुआ' : 'e.g. Sunita Bua'}
+                        className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-stone-300 bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-stone-600 text-[10px] font-semibold mb-0.5">
+                        {isHi ? 'फ़ोन नंबर' : 'Phone'}
+                      </label>
+                      <input
+                        type="tel"
+                        value={editClaimedByPhone}
+                        onChange={(e) => setEditClaimedByPhone(e.target.value)}
+                        placeholder="9876543210"
+                        className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-stone-300 bg-white"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-stone-700 font-bold mb-1">
+                  {isHi ? 'नोट्स / विवरण' : 'Notes / Remarks'}
+                </label>
+                <textarea
+                  rows={2}
+                  value={editNotes}
+                  onChange={(e) => setEditNotes(e.target.value)}
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B1D2C]"
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-stone-200">
+                <button
+                  type="button"
+                  disabled={deletingItem}
+                  onClick={() => handleDeleteItem(editingItem.id, editingItem.title)}
+                  className="px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 font-bold text-xs flex items-center gap-1 transition"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  <span>{isHi ? 'हटाएँ' : 'Delete'}</span>
+                </button>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditingItem(null)}
+                    className="px-3 py-2 rounded-xl border border-stone-300 text-xs font-semibold hover:bg-stone-100"
+                  >
+                    {isHi ? 'रद्द करें' : 'Cancel'}
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submittingEdit}
+                    className="px-4 py-2 rounded-xl bg-[#8B1D2C] hover:bg-[#731522] text-white text-xs font-bold shadow-md"
+                  >
+                    {submittingEdit ? (isHi ? 'सहेजा जा रहा है...' : 'Saving...') : (isHi ? 'बदलाव सहेजें' : 'Save Changes')}
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       )}

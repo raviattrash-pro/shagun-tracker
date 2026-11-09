@@ -85,84 +85,17 @@ export default function DashboardPage() {
           : 'bg-[#E8EDF5] text-slate-800'
       )}
     >
-      {/* Top Visual Mode Selector Banner */}
-      <div className="max-w-7xl mx-auto px-4 pt-3 pb-2 flex flex-wrap items-center justify-between gap-3 border-b border-black/5 dark:border-white/10">
-        <div className="flex items-center gap-2 text-xs font-bold text-stone-600 dark:text-slate-400">
-          <BookOpen className="h-4 w-4 text-[#8B1D2C]" />
-          <span>शैली (Ledger View):</span>
-          <div className="inline-flex rounded-full bg-black/5 dark:bg-white/10 p-0.5 text-xs font-semibold">
-            {/* 1. Traditional Bahi-Khata (Default Recommended) */}
-            <button
-              type="button"
-              onClick={() => setTheme('traditional')}
-              className={cn(
-                'rounded-full px-3 py-1 transition text-xs font-bold flex items-center gap-1.5',
-                theme === 'traditional'
-                  ? 'bg-[#8B1D2C] text-white shadow-sm'
-                  : 'text-stone-700 dark:text-slate-300 hover:text-black dark:hover:text-white'
-              )}
-            >
-              <span>📕</span>
-              <span>पारंपरिक बही-खाता (Bahi-Khata)</span>
-            </button>
-
-            {/* 2. Claymorphism 3D */}
-            <button
-              type="button"
-              onClick={() => setTheme('clay')}
-              className={cn(
-                'rounded-full px-3 py-1 transition text-xs font-bold flex items-center gap-1.5',
-                theme === 'clay'
-                  ? 'bg-[#FA7C77] text-white shadow-sm'
-                  : 'text-stone-700 dark:text-slate-300 hover:text-black dark:hover:text-white'
-              )}
-            >
-              <span>🌸</span>
-              <span>Claymorphism 3D</span>
-            </button>
-
-            {/* 3. Fintech Dark */}
-            <button
-              type="button"
-              onClick={() => setTheme('dark')}
-              className={cn(
-                'rounded-full px-3 py-1 transition text-xs font-bold flex items-center gap-1.5',
-                theme === 'dark'
-                  ? 'bg-[#2563EB] text-white shadow-sm'
-                  : 'text-stone-700 dark:text-slate-300 hover:text-black dark:hover:text-white'
-              )}
-            >
-              <span>🌌</span>
-              <span>Dark Mode</span>
-            </button>
-
-            {/* 4. Minimal Light */}
-            <button
-              type="button"
-              onClick={() => setTheme('light')}
-              className={cn(
-                'rounded-full px-3 py-1 transition text-xs font-bold flex items-center gap-1.5',
-                theme === 'light'
-                  ? 'bg-slate-700 text-white shadow-sm'
-                  : 'text-stone-700 dark:text-slate-300 hover:text-black dark:hover:text-white'
-              )}
-            >
-              <span>☀️</span>
-              <span>Light Mode</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Demo Mode Notice */}
-        {isDemo && (
-          <div className="text-xs font-semibold px-3 py-1 rounded-full bg-amber-500/10 text-amber-900 dark:text-amber-300 border border-amber-400/40">
-            <span>डेमो खाता (शर्मा परिवार) • </span>
+      {/* Demo Mode Notice (if in demo session) */}
+      {isDemo && (
+        <div className="max-w-7xl mx-auto px-4 pt-2.5 pb-1 flex items-center justify-end">
+          <div className="text-xs font-semibold px-3 py-1 rounded-full bg-amber-500/10 text-amber-900 dark:text-amber-300 border border-amber-400/40 flex items-center gap-1.5">
+            <span>✨ {language === 'hi' ? 'डेमो खाता (शर्मा परिवार)' : 'Demo Mode (Sharma Family)'} • </span>
             <Link href="/login" className="underline font-bold text-[#8B1D2C] dark:text-[#4EECD3]">
-              व्यक्तिगत बही-खाता लॉगिन करें
+              {language === 'hi' ? 'लॉगिन करें' : 'Sign In'}
             </Link>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* ───────────────────────────────────────────────────────────── */}
       {/* 1. TRADITIONAL BAHI-KHATA (Primary & Default View)            */}

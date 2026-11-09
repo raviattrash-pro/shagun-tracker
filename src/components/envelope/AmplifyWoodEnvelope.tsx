@@ -1,15 +1,14 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import { GiftData, GuestData } from '@/types';
-import { formatCurrency, stringToColor } from '@/utils/format';
+import { formatCurrency } from '@/utils/format';
 import { soundEngine } from '@/utils/audio';
 import { CashReveal } from './CashReveal';
 import { GiftReveal } from './GiftReveal';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, CheckCircle2, IndianRupee, Sparkles, Volume2, VolumeX } from 'lucide-react';
+import { RotateCcw, CheckCircle2, IndianRupee, Sparkles, Volume2, VolumeX, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { cn } from '@/utils/cn';
 
@@ -18,8 +17,9 @@ interface AmplifyWoodEnvelopeProps {
   guest?: GuestData;
   initialOpen?: boolean;
   onOpen?: () => void;
+  onClose?: () => void;
   className?: string;
-  headline?: string; // Optional custom top text (defaults to "AMPLIFY")
+  headline?: string;
 }
 
 export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
@@ -27,6 +27,7 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
   guest: propGuest,
   initialOpen = false,
   onOpen,
+  onClose,
   className,
   headline = 'AMPLIFY',
 }) => {
@@ -38,12 +39,6 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
 
   const guest = propGuest || gift.guest;
   const guestName = guest?.name || 'Beloved Guest';
-  const initials = guestName
-    .split(' ')
-    .map((w) => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
 
   const hasCash = (gift.giftType === 'CASH' || gift.giftType === 'BOTH') && gift.cashAmount;
   const hasItem = (gift.giftType === 'GIFT_ITEM' || gift.giftType === 'BOTH') && gift.giftDescription;
@@ -51,12 +46,12 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
 
   // Drag physics motion values
   const dragY = useMotionValue(0);
-  const springY = useSpring(dragY, { stiffness: 260, damping: 24 });
+  const springY = useSpring(dragY, { stiffness: 280, damping: 26 });
 
   // Dynamic light bloom intensity based on drag distance
-  const lightOpacity = useTransform(dragY, [0, 160], [0.45, 1.0]);
-  const lightScale = useTransform(dragY, [0, 160], [1.0, 1.6]);
-  const sealGlow = useTransform(dragY, [0, 160], [1.0, 1.8]);
+  const lightOpacity = useTransform(dragY, [0, 150], [0.6, 1.0]);
+  const lightScale = useTransform(dragY, [0, 150], [1.0, 1.5]);
+  const sealGlow = useTransform(dragY, [0, 150], [1.0, 1.7]);
 
   const triggerConfetti = () => {
     try {
@@ -121,86 +116,96 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
   return (
     <div
       className={cn(
-        'group relative w-full max-w-[420px] mx-auto select-none font-sans',
+        'group relative w-full max-w-[460px] mx-auto select-none font-sans',
         className
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Outer Luxury Frame */}
-      <div className="relative rounded-[32px] overflow-hidden shadow-[0_24px_50px_rgba(20,10,5,0.45),0_4px_12px_rgba(0,0,0,0.2)] border-2 border-[#5C3317]/40 bg-[#161B18]">
-        {/* Top Sound Toggle Pill */}
-        <button
-          type="button"
-          onClick={toggleMute}
-          className="absolute top-3 right-3 z-50 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white/80 hover:text-white flex items-center justify-center transition hover:scale-105"
-          title={isMuted ? 'Unmute sounds' : 'Mute sounds'}
-        >
-          {isMuted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
-        </button>
+      {/* Outer Luxury Frame matching reference 4:3 ratio */}
+      <div className="relative rounded-[28px] overflow-hidden shadow-[0_24px_50px_rgba(20,10,5,0.45),0_4px_12px_rgba(0,0,0,0.2)] border-2 border-[#5C3317]/50 bg-[#141816]">
+        {/* Top Floating Controls: Sound Toggle & Close Button */}
+        <div className="absolute top-3.5 right-3.5 z-50 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={toggleMute}
+            className="w-8 h-8 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-white/90 hover:text-white flex items-center justify-center transition hover:scale-105 shadow-md"
+            title={isMuted ? 'Unmute sounds' : 'Mute sounds'}
+          >
+            {isMuted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
+          </button>
+
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/30 text-white hover:text-amber-300 flex items-center justify-center transition hover:scale-105 shadow-md"
+              title="Close (बंद करें)"
+            >
+              <X className="h-4 w-4 stroke-[2.5]" />
+            </button>
+          )}
+        </div>
 
         {/* ───────────────────────────────────────────────────────────── */}
-        {/* UPPER ZONE: MISTY SKY & ORGANIC FOLIAGE CANOPY               */}
+        {/* UPPER ZONE: MISTY GREY/WHITE SKY & ORGANIC FOLIAGE CANOPY     */}
         {/* (Matching exact screenshot media_1793809559758_f138cbc1.jpg) */}
         {/* ───────────────────────────────────────────────────────────── */}
-        <div className="relative h-44 sm:h-48 w-full overflow-hidden bg-gradient-to-b from-[#B8C4BC] via-[#D5DED8] to-[#E9EEEB]">
-          {/* Subtle Ambient Sky Mist Layer */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.85)_0%,rgba(215,225,220,0.6)_60%,rgba(180,195,188,0.3)_100%)] pointer-events-none" />
+        <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-gradient-to-b from-[#8C9891] via-[#BAC5BE] to-[#DEE4E0]">
+          {/* Subtle Atmospheric Mist Radial Light */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.9)_0%,rgba(220,230,225,0.65)_50%,rgba(170,185,178,0.3)_100%)] pointer-events-none" />
 
-          {/* Top-Left Blurred Leafy Tree Branches */}
-          <div className="absolute -top-10 -left-12 w-64 h-44 pointer-events-none opacity-90 filter blur-[2px] transition-transform duration-700 group-hover:scale-105">
-            <svg viewBox="0 0 200 150" className="w-full h-full">
-              {/* Dark Forest Green Leaves */}
-              <circle cx="20" cy="10" r="34" fill="#1C331E" />
-              <circle cx="65" cy="15" r="28" fill="#264429" />
-              <circle cx="110" cy="20" r="24" fill="#1D3620" />
-              <circle cx="45" cy="45" r="30" fill="#325735" />
-              <circle cx="85" cy="50" r="26" fill="#3C663F" />
-              <circle cx="130" cy="35" r="22" fill="#2A4B2D" />
-              <circle cx="30" cy="75" r="22" fill="#4B774E" />
-              <circle cx="70" cy="80" r="20" fill="#355B38" />
-              {/* Dappled Sunshine Highlights */}
-              <circle cx="55" cy="35" r="14" fill="#6B996E" opacity="0.6" />
-              <circle cx="95" cy="40" r="12" fill="#84B087" opacity="0.5" />
+          {/* Lush Tree Foliage along the top & corners (Soft Bokeh framing) */}
+          <div className="absolute -top-12 -left-10 w-72 h-44 pointer-events-none opacity-95 filter blur-[1.5px] transition-transform duration-700 group-hover:scale-105">
+            <svg viewBox="0 0 240 160" className="w-full h-full">
+              {/* Organic branch foliage leaves */}
+              <ellipse cx="40" cy="20" rx="45" ry="32" fill="#1C301E" />
+              <ellipse cx="90" cy="25" rx="38" ry="28" fill="#28442B" />
+              <ellipse cx="145" cy="20" rx="32" ry="22" fill="#1E3521" />
+              <ellipse cx="60" cy="55" rx="40" ry="26" fill="#325435" />
+              <ellipse cx="115" cy="50" rx="34" ry="24" fill="#3C643F" />
+              <ellipse cx="30" cy="80" rx="28" ry="20" fill="#254228" />
+              <ellipse cx="85" cy="85" rx="30" ry="18" fill="#4B774E" opacity="0.8" />
+              <circle cx="70" cy="40" r="14" fill="#6B996E" opacity="0.45" />
+              <circle cx="120" cy="35" r="12" fill="#88B88C" opacity="0.35" />
             </svg>
           </div>
 
-          {/* Top-Right Blurred Leafy Tree Canopy */}
-          <div className="absolute -top-8 -right-10 w-60 h-44 pointer-events-none opacity-90 filter blur-[3px] transition-transform duration-700 group-hover:scale-105">
-            <svg viewBox="0 0 200 150" className="w-full h-full">
-              <circle cx="170" cy="10" r="32" fill="#1B311D" />
-              <circle cx="130" cy="18" r="28" fill="#27462B" />
-              <circle cx="85" cy="15" r="22" fill="#1F3A22" />
-              <circle cx="150" cy="45" r="28" fill="#335A36" />
-              <circle cx="115" cy="50" r="24" fill="#3E6B43" />
-              <circle cx="175" cy="65" r="22" fill="#4C7D52" />
-              <circle cx="135" cy="75" r="18" fill="#375F3B" />
-              <circle cx="140" cy="35" r="12" fill="#78A67B" opacity="0.55" />
+          <div className="absolute -top-10 -right-8 w-64 h-44 pointer-events-none opacity-95 filter blur-[2px] transition-transform duration-700 group-hover:scale-105">
+            <svg viewBox="0 0 220 160" className="w-full h-full">
+              <ellipse cx="180" cy="18" rx="44" ry="30" fill="#1A2E1C" />
+              <ellipse cx="130" cy="22" rx="36" ry="26" fill="#254128" />
+              <ellipse cx="80" cy="18" rx="30" ry="20" fill="#1D3420" />
+              <ellipse cx="160" cy="52" rx="38" ry="24" fill="#335636" />
+              <ellipse cx="110" cy="50" rx="32" ry="22" fill="#3E6843" />
+              <ellipse cx="185" cy="78" rx="26" ry="18" fill="#243F27" />
+              <ellipse cx="140" cy="80" rx="26" ry="16" fill="#4C7850" opacity="0.75" />
+              <circle cx="145" cy="35" r="14" fill="#78A57B" opacity="0.4" />
             </svg>
           </div>
 
-          {/* Secondary Gaussian Blur Depth-of-Field Overlay */}
-          <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-b from-black/20 via-transparent to-transparent pointer-events-none" />
+          {/* Vignette depth gradient */}
+          <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-black/25 to-transparent pointer-events-none" />
 
           {/* ───────────────────────────────────────────────────────── */}
           {/* CENTER DEBOSSED TEXT: "AMPLIFY" (Exact typography in SS) */}
           {/* ───────────────────────────────────────────────────────── */}
           <div className="absolute top-20 sm:top-24 left-1/2 -translate-x-1/2 text-center pointer-events-none z-10 w-full px-4">
             <h2
-              className="text-lg sm:text-xl font-black tracking-[0.28em] uppercase transition-all duration-300"
+              className="text-xl sm:text-2xl font-black tracking-[0.35em] uppercase"
               style={{
-                color: 'rgba(55, 68, 62, 0.72)',
+                color: 'rgba(50, 62, 56, 0.85)',
                 textShadow:
-                  '0 1.5px 2px rgba(255, 255, 255, 0.95), 0 -1.5px 1.5px rgba(20, 30, 25, 0.35)',
+                  '0 1.5px 1px rgba(255, 255, 255, 0.95), 0 -1.5px 1px rgba(15, 25, 20, 0.45)',
               }}
             >
               {headline}
             </h2>
             <p
-              className="text-[9px] font-bold tracking-[0.2em] uppercase mt-0.5 text-slate-500/70"
-              style={{ textShadow: '0 1px 1px rgba(255,255,255,0.8)' }}
+              className="text-[10px] sm:text-[11px] font-bold tracking-[0.22em] uppercase mt-1 text-slate-600/80"
+              style={{ textShadow: '0 1px 1px rgba(255,255,255,0.85)' }}
             >
-              {guestName} • ₹{Number(gift.cashAmount || 0).toLocaleString('en-IN')}
+              {guestName} {gift.cashAmount ? `• ₹${Number(gift.cashAmount).toLocaleString('en-IN')}` : ''}
             </p>
           </div>
 
@@ -212,23 +217,22 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
               opacity: lightOpacity,
               scale: lightScale,
             }}
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-80 h-32 pointer-events-none z-10 flex items-end justify-center"
+            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-88 h-32 pointer-events-none z-10 flex items-end justify-center"
           >
             {/* Soft Ambient Radiance Bloom */}
-            <div className="w-72 h-24 rounded-full bg-[radial-gradient(ellipse_at_bottom,rgba(255,248,220,1)_0%,rgba(251,191,36,0.85)_30%,rgba(245,158,11,0.35)_55%,transparent_75%)] blur-xl" />
+            <div className="w-80 h-24 rounded-full bg-[radial-gradient(ellipse_at_bottom,rgba(255,248,220,1)_0%,rgba(251,191,36,0.85)_35%,rgba(245,158,11,0.35)_60%,transparent_80%)] blur-xl" />
             {/* Sharp Core Hotspot */}
-            <div className="absolute bottom-0 w-32 h-10 rounded-full bg-white/90 blur-md" />
+            <div className="absolute bottom-0 w-36 h-10 rounded-full bg-white/95 blur-md" />
           </motion.div>
         </div>
 
         {/* ───────────────────────────────────────────────────────────── */}
         {/* LOWER ZONE: LUXURY POLISHED TEAK/WALNUT WOOD BARRIER          */}
-        {/* Pull-down flap with curved crest, grab handle & glowing seal  */}
         {/* ───────────────────────────────────────────────────────────── */}
-        <div className="relative min-h-[360px] bg-[#2E1609]">
+        <div className="relative min-h-[300px] sm:min-h-[320px] bg-[#2E1609]">
           {/* Behind the Flap: The Revealed Inner Shagun Blessing Card */}
-          <div className="p-5 sm:p-6 text-slate-800 dark:text-white">
-            <div className="rounded-3xl bg-[#FAF8F5] dark:bg-[#111726] p-5 sm:p-6 shadow-2xl border-2 border-amber-400/80 space-y-4">
+          <div className="p-4 sm:p-5 text-slate-800 dark:text-white">
+            <div className="rounded-3xl bg-[#FAF8F5] dark:bg-[#111726] p-5 shadow-2xl border-2 border-amber-400/80 space-y-4">
               {/* Auspicious Letterhead Header */}
               <div className="text-center pb-2 border-b border-amber-200 dark:border-amber-900/40 relative">
                 <div className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-tr from-amber-400 to-amber-200 text-amber-950 font-serif font-black text-base mb-1 shadow-md">
@@ -284,7 +288,7 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
               )}
 
               {/* Action Buttons inside revealed card */}
-              <div className="mt-4 flex items-center justify-between border-t border-amber-200 dark:border-amber-900/40 pt-4">
+              <div className="mt-4 flex items-center justify-between border-t border-amber-200 dark:border-amber-900/40 pt-3">
                 <Button
                   type="button"
                   variant="outline"
@@ -296,10 +300,21 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
                   <span>Reseal (दोबारा सील करें)</span>
                 </Button>
 
-                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  Recorded in ledger
-                </span>
+                {onClose ? (
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={onClose}
+                    className="text-xs bg-[#8B1D2C] hover:bg-[#731522] text-white rounded-xl shadow-xs"
+                  >
+                    <span>बंद करें (Close)</span>
+                  </Button>
+                ) : (
+                  <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    Recorded in ledger
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -311,8 +326,8 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
             {!isOpen && (
               <motion.div
                 drag="y"
-                dragConstraints={{ top: 0, bottom: 280 }}
-                dragElastic={0.25}
+                dragConstraints={{ top: 0, bottom: 260 }}
+                dragElastic={0.2}
                 onDragStart={() => {
                   setIsDragging(true);
                   soundEngine.playWoodSlide();
@@ -322,7 +337,7 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
                 }}
                 onDragEnd={(_, info) => {
                   setIsDragging(false);
-                  if (info.offset.y > 75 || info.velocity.y > 350) {
+                  if (info.offset.y > 60 || info.velocity.y > 300) {
                     handleOpen();
                   } else {
                     dragY.set(0);
@@ -333,188 +348,155 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
                 style={{ y: springY }}
                 initial={{ y: 0 }}
                 exit={{
-                  y: 420,
+                  y: 380,
                   opacity: 0,
-                  transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] },
+                  transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
                 }}
                 className="absolute inset-0 z-30 cursor-grab active:cursor-grabbing select-none"
               >
-                {/* ─────────────────────────────────────────────────── */}
-                {/* SVG PROCEDURAL REALISTIC WOOD TEXTURE + CURVED CREST */}
-                {/* ─────────────────────────────────────────────────── */}
+                {/* Procedural Realistic Teak Wood + Luminous Curved Crest */}
                 <div className="relative w-full h-full">
                   <svg
-                    viewBox="0 0 400 480"
+                    viewBox="0 0 400 360"
                     preserveAspectRatio="none"
                     className="w-full h-full drop-shadow-[0_-12px_24px_rgba(0,0,0,0.45)] overflow-visible"
                   >
                     <defs>
-                      {/* Rich Teak & Walnut Vertical Wood Gradient */}
-                      <linearGradient id="wood-base" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#4A2511" />
-                        <stop offset="12%" stopColor="#6C3919" />
-                        <stop offset="25%" stopColor="#8C4D22" />
-                        <stop offset="38%" stopColor="#5A2E14" />
-                        <stop offset="50%" stopColor="#7E431D" />
-                        <stop offset="62%" stopColor="#9C5627" />
-                        <stop offset="75%" stopColor="#5C3015" />
-                        <stop offset="88%" stopColor="#7A411C" />
-                        <stop offset="100%" stopColor="#43210E" />
+                      {/* Teak/Walnut Wood Plank Gradient */}
+                      <linearGradient id="wood-base-fine" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#5B2E15" />
+                        <stop offset="10%" stopColor="#7E431D" />
+                        <stop offset="22%" stopColor="#9C5627" />
+                        <stop offset="35%" stopColor="#6D3718" />
+                        <stop offset="50%" stopColor="#8C4D22" />
+                        <stop offset="65%" stopColor="#A55D2B" />
+                        <stop offset="78%" stopColor="#6A3617" />
+                        <stop offset="90%" stopColor="#86471E" />
+                        <stop offset="100%" stopColor="#522711" />
                       </linearGradient>
 
-                      {/* Satin Lacquer Specular Sheen (Curved Top to Bottom) */}
-                      <linearGradient id="wood-gloss" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.25" />
-                        <stop offset="15%" stopColor="#FFFFFF" stopOpacity="0.08" />
-                        <stop offset="60%" stopColor="#000000" stopOpacity="0.05" />
-                        <stop offset="100%" stopColor="#000000" stopOpacity="0.45" />
+                      {/* Satin Lacquer Specular Sheen */}
+                      <linearGradient id="wood-sheen-fine" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.22" />
+                        <stop offset="20%" stopColor="#FFFFFF" stopOpacity="0.06" />
+                        <stop offset="70%" stopColor="#000000" stopOpacity="0.04" />
+                        <stop offset="100%" stopColor="#000000" stopOpacity="0.38" />
                       </linearGradient>
 
                       {/* Illuminated Rim Highlight Filter */}
-                      <filter id="rim-glow" x="-20%" y="-100%" width="140%" height="300%">
-                        <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#FEF08A" floodOpacity="0.9" />
-                        <feDropShadow dx="0" dy="0" stdDeviation="10" floodColor="#F59E0B" floodOpacity="0.6" />
+                      <filter id="rim-glow-fine" x="-20%" y="-100%" width="140%" height="300%">
+                        <feDropShadow dx="0" dy="0" stdDeviation="3.5" floodColor="#FEF08A" floodOpacity="0.95" />
+                        <feDropShadow dx="0" dy="0" stdDeviation="8" floodColor="#F59E0B" floodOpacity="0.6" />
                       </filter>
 
-                      {/* Wood Grain Pattern Lines */}
-                      <pattern id="wood-fibers" width="40" height="480" patternUnits="userSpaceOnUse">
-                        <line x1="4" y1="0" x2="4" y2="480" stroke="#2B1408" strokeWidth="1.2" opacity="0.45" />
-                        <line x1="8" y1="0" x2="7" y2="480" stroke="#A75F2C" strokeWidth="0.8" opacity="0.35" />
-                        <line x1="14" y1="0" x2="15" y2="480" stroke="#38190B" strokeWidth="1.5" opacity="0.5" />
-                        <line x1="22" y1="0" x2="21" y2="480" stroke="#B86E35" strokeWidth="0.7" opacity="0.4" />
-                        <line x1="28" y1="0" x2="29" y2="480" stroke="#261207" strokeWidth="1.8" opacity="0.55" />
-                        <line x1="34" y1="0" x2="33" y2="480" stroke="#9E5728" strokeWidth="0.9" opacity="0.3" />
+                      {/* Subtle fine vertical wood grain pattern */}
+                      <pattern id="wood-grain-subtle" width="20" height="360" patternUnits="userSpaceOnUse">
+                        <line x1="3" y1="0" x2="3" y2="360" stroke="#3D1C0B" strokeWidth="0.8" opacity="0.35" />
+                        <line x1="8" y1="0" x2="7.5" y2="360" stroke="#B86E35" strokeWidth="0.6" opacity="0.25" />
+                        <line x1="14" y1="0" x2="14.5" y2="360" stroke="#48220E" strokeWidth="0.9" opacity="0.4" />
+                        <line x1="18" y1="0" x2="18" y2="360" stroke="#D48B4C" strokeWidth="0.5" opacity="0.2" />
                       </pattern>
                     </defs>
 
-                    {/* ─────────────────────────────────────────────── */}
-                    {/* The Wood Flap Body with Smooth Curved Crest     */}
-                    {/* Curve starts at (0, 22), peaks smoothly to       */}
-                    {/* (200, 4) in the center, and ends at (400, 22)   */}
-                    {/* ─────────────────────────────────────────────── */}
+                    {/* The Wood Flap Body with Smooth Curved Crest */}
+                    {/* Curve: (0, 24) -> (200, 4) -> (400, 24) */}
                     <path
-                      d="M 0 22 
-                         Q 200 2 400 22 
-                         L 400 480 
-                         L 0 480 
-                         Z"
-                      fill="url(#wood-base)"
+                      d="M 0 24 Q 200 4 400 24 L 400 360 L 0 360 Z"
+                      fill="url(#wood-base-fine)"
+                    />
+                    <path
+                      d="M 0 24 Q 200 4 400 24 L 400 360 L 0 360 Z"
+                      fill="url(#wood-grain-subtle)"
+                    />
+                    <path
+                      d="M 0 24 Q 200 4 400 24 L 400 360 L 0 360 Z"
+                      fill="url(#wood-sheen-fine)"
                     />
 
-                    {/* Overlay Wood Fiber Striations */}
-                    <path
-                      d="M 0 22 
-                         Q 200 2 400 22 
-                         L 400 480 
-                         L 0 480 
-                         Z"
-                      fill="url(#wood-fibers)"
-                    />
-
-                    {/* Lacquer Specular Sheen & Vignette */}
-                    <path
-                      d="M 0 22 
-                         Q 200 2 400 22 
-                         L 400 480 
-                         L 0 480 
-                         Z"
-                      fill="url(#wood-gloss)"
-                    />
-
-                    {/* Natural Wood Knots / Burls (Matching hyper-realism in SS) */}
-                    <g opacity="0.45">
-                      <ellipse cx="65" cy="180" rx="4" ry="12" fill="#200E05" />
-                      <ellipse cx="145" cy="310" rx="3" ry="8" fill="#1A0C04" />
-                      <ellipse cx="320" cy="160" rx="5" ry="14" fill="#241006" />
-                      <ellipse cx="340" cy="240" rx="2.5" ry="6" fill="#1C0D05" />
-                      <ellipse cx="260" cy="380" rx="4" ry="10" fill="#200E05" />
+                    {/* Subtle Organic Wood Knots */}
+                    <g opacity="0.35">
+                      <ellipse cx="70" cy="120" rx="3.5" ry="9" fill="#200E05" />
+                      <ellipse cx="160" cy="220" rx="3" ry="6" fill="#1A0C04" />
+                      <ellipse cx="310" cy="110" rx="4" ry="10" fill="#241006" />
+                      <ellipse cx="335" cy="180" rx="2" ry="5" fill="#1C0D05" />
                     </g>
 
-                    {/* ─────────────────────────────────────────────── */}
-                    {/* THE LUMINOUS ILLUMINATED RIM HIGHLIGHT          */}
-                    {/* Sharp radiant white edge along the curved peak  */}
-                    {/* ─────────────────────────────────────────────── */}
+                    {/* The Luminous Rim Highlight along curved top */}
                     <path
-                      d="M 0 22 Q 200 2 400 22"
+                      d="M 0 24 Q 200 4 400 24"
                       stroke="#FFFFFF"
                       strokeWidth="2.5"
                       fill="none"
-                      filter="url(#rim-glow)"
+                      filter="url(#rim-glow-fine)"
                     />
                     <path
-                      d="M 0 22 Q 200 2 400 22"
+                      d="M 0 24 Q 200 4 400 24"
                       stroke="#FFFBEB"
-                      strokeWidth="1.5"
+                      strokeWidth="1.2"
                       fill="none"
                     />
                   </svg>
 
                   {/* ───────────────────────────────────────────────── */}
-                  {/* TACTILE GRAB HANDLE: WHITE GLOVE / HAND SYMBOL    */}
-                  {/* (Exact hand symbol with 3 ribs centered on seam) */}
+                  {/* TACTILE GRAB HANDLE: WHITE HAND SYMBOL            */}
+                  {/* Mounted right at the crest apex of the wooden wall*/}
                   {/* ───────────────────────────────────────────────── */}
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-40 pointer-events-none flex flex-col items-center">
+                    {/* White Stylized Hand with 3 vertical lines (matching SS) */}
                     <div
                       className={cn(
-                        'w-8 h-8 rounded-full bg-white shadow-[0_4px_12px_rgba(0,0,0,0.35),0_0_12px_rgba(255,255,255,0.8)] border border-slate-200 flex items-center justify-center text-slate-800 transition-transform duration-200',
+                        'w-7 h-7 rounded-full bg-white shadow-[0_3px_10px_rgba(0,0,0,0.35),0_0_10px_rgba(255,255,255,0.9)] flex items-center justify-center transition-transform duration-200',
                         isHovered && !isDragging && 'scale-110 -translate-y-0.5'
                       )}
                     >
-                      {/* Stylized Hand Grab Icon with 3 finger ribs matching screenshot */}
-                      <svg viewBox="0 0 24 24" className="w-5 h-5 fill-slate-800">
+                      <svg viewBox="0 0 24 24" className="w-4 h-4 fill-slate-800">
                         <path d="M 9 3 C 8.4 3 8 3.4 8 4 L 8 9 C 8 9.2 8.1 9.4 8.2 9.6 C 7.6 9.8 7 10.4 7 11.2 L 7 14 C 7 17.3 9.7 20 13 20 C 16.3 20 19 17.3 19 14 L 19 9 C 19 8.4 18.6 8 18 8 C 17.4 8 17 8.4 17 9 L 17 9.5 C 16.7 9.2 16.4 9 16 9 C 15.4 9 15 9.4 15 10 L 15 10.5 C 14.7 10.2 14.4 10 14 10 C 13.4 10 13 10.4 13 11 L 13 4 C 13 3.4 12.6 3 12 3 C 11.4 3 11 3.4 11 4 L 11 8 C 10.7 7.7 10.4 7.5 10 7.5 C 9.4 7.5 9 7.9 9 8.5 Z" />
-                        {/* Finger knuckle ribs */}
                         <line x1="11" y1="12" x2="11" y2="15" stroke="#FFFFFF" strokeWidth="1" strokeLinecap="round" />
                         <line x1="13" y1="12" x2="13" y2="15" stroke="#FFFFFF" strokeWidth="1" strokeLinecap="round" />
                         <line x1="15" y1="12" x2="15" y2="15" stroke="#FFFFFF" strokeWidth="1" strokeLinecap="round" />
                       </svg>
                     </div>
 
-                    {/* ─────────────────────────────────────────────── */}
-                    {/* GLOWING AMBER ENERGY SPARK (⚡ Lightning glyph) */}
-                    {/* (Directly beneath the hand on the wooden face)   */}
-                    {/* ─────────────────────────────────────────────── */}
+                    {/* Glowing Amber Energy Spark (⚡) right under the hand */}
                     <motion.div
                       style={{ scale: sealGlow }}
-                      className="mt-3 relative flex items-center justify-center"
+                      className="mt-2.5 relative flex items-center justify-center"
                     >
                       {/* Diffuse Amber Radiant Halo */}
-                      <div className="absolute w-12 h-12 rounded-full bg-gradient-to-tr from-[#EA580C] to-[#F59E0B] blur-md opacity-85 animate-pulse" />
+                      <div className="absolute w-10 h-10 rounded-full bg-gradient-to-tr from-[#EA580C] to-[#F59E0B] blur-md opacity-90 animate-pulse" />
 
                       {/* Glowing Golden Lightning Bolt Glyph */}
-                      <div className="relative z-10 w-6 h-6 flex items-center justify-center filter drop-shadow-[0_0_8px_#F59E0B] drop-shadow-[0_0_16px_#EA580C]">
-                        <svg viewBox="0 0 24 24" className="w-5 h-5 fill-[#FDE047] stroke-[#F59E0B] stroke-width-[0.5]">
+                      <div className="relative z-10 w-5 h-5 flex items-center justify-center">
+                        <svg viewBox="0 0 24 24" className="w-4 h-4 fill-amber-300 stroke-amber-500">
                           <path d="M 13 2 L 4 14 L 12 14 L 11 22 L 20 10 L 12 10 Z" />
                         </svg>
                       </div>
                     </motion.div>
                   </div>
 
-                  {/* ───────────────────────────────────────────────── */}
-                  {/* LOWER DEDICATION PLAQUE & INSTRUCTION HINT        */}
-                  {/* ───────────────────────────────────────────────── */}
-                  <div className="absolute bottom-6 left-0 right-0 px-6 text-center pointer-events-none">
-                    <div className="inline-block rounded-2xl bg-black/55 backdrop-blur-md px-5 py-3 border border-amber-300/30 text-amber-100 shadow-xl max-w-[320px]">
-                      <div className="flex items-center justify-center gap-2 mb-1">
-                        <span className="h-px w-5 bg-amber-400/50" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-amber-300">
-                          Shagun With Blessings
+                  {/* Lower Dedication Plaque & Pull-Down Hint */}
+                  <div className="absolute bottom-5 left-0 right-0 px-6 text-center pointer-events-none">
+                    <div className="inline-block rounded-2xl bg-black/60 backdrop-blur-md px-4 py-2.5 border border-amber-300/30 text-amber-100 shadow-xl max-w-[280px]">
+                      <div className="flex items-center justify-center gap-2 mb-0.5">
+                        <span className="h-px w-4 bg-amber-400/50" />
+                        <span className="text-[9px] font-black uppercase tracking-widest text-amber-300">
+                          Shagun Blessing
                         </span>
-                        <span className="h-px w-5 bg-amber-400/50" />
+                        <span className="h-px w-4 bg-amber-400/50" />
                       </div>
-                      <h4 className="font-serif font-black text-base sm:text-lg text-white truncate">
+                      <h4 className="font-serif font-black text-sm sm:text-base text-white truncate">
                         {guestName}
                       </h4>
                       {guest?.relation && (
-                        <p className="text-[11px] text-amber-200/80 capitalize mt-0.5">
+                        <p className="text-[10px] text-amber-200/80 capitalize mt-0.5">
                           ({guest.relation.replace('_', ' ')})
                         </p>
                       )}
                     </div>
 
                     {/* Pull Down / Swipe to Unseal Hint */}
-                    <div className="mt-3 flex items-center justify-center gap-1.5 text-xs font-bold text-amber-200/90 tracking-wide drop-shadow-md">
-                      <Sparkles className="h-3.5 w-3.5 text-amber-300 animate-spin" />
+                    <div className="mt-2 flex items-center justify-center gap-1.5 text-[11px] font-bold text-amber-200/90 tracking-wide drop-shadow-md">
+                      <Sparkles className="h-3 w-3 text-amber-300 animate-spin" />
                       <span>Pull down or tap to reveal shagun</span>
                     </div>
                   </div>

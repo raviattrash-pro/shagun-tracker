@@ -214,18 +214,22 @@ export async function PATCH(req: NextRequest) {
         },
       });
     } else {
-      // General field update
-      const { title, category, suggestedStore, storeUrl, approxCost, notes } = body;
+      // General field update (e.g. from Edit modal)
+      const { title, category, suggestedStore, storeUrl, approxCost, notes, status, claimedBy, claimedByPhone } = body;
+      const updateData: any = {};
+      if (title !== undefined) updateData.title = title?.trim();
+      if (category !== undefined) updateData.category = category?.trim();
+      if (suggestedStore !== undefined) updateData.suggestedStore = suggestedStore?.trim() || null;
+      if (storeUrl !== undefined) updateData.storeUrl = storeUrl?.trim() || null;
+      if (approxCost !== undefined) updateData.approxCost = approxCost ? Number(approxCost) : null;
+      if (notes !== undefined) updateData.notes = notes?.trim() || null;
+      if (status !== undefined) updateData.status = status;
+      if (claimedBy !== undefined) updateData.claimedBy = claimedBy?.trim() || null;
+      if (claimedByPhone !== undefined) updateData.claimedByPhone = claimedByPhone?.trim() || null;
+
       updated = await prisma.weddingGiftItem.update({
         where: { id },
-        data: {
-          title: title?.trim(),
-          category: category?.trim(),
-          suggestedStore: suggestedStore?.trim(),
-          storeUrl: storeUrl?.trim(),
-          approxCost: approxCost ? Number(approxCost) : null,
-          notes: notes?.trim(),
-        },
+        data: updateData,
       });
     }
 
