@@ -164,7 +164,7 @@ export function PwaInstallButton({ className, variant = 'header' }: PwaInstallBu
                     </span>
                     <span>
                       {isHi ? 'नीचे स्क्रॉल कर ' : 'Scroll down & select '}
-                      <strong>"Add to Home Screen" </strong>
+                      <strong>&quot;Add to Home Screen&quot; </strong>
                       <PlusSquare className="inline h-3.5 w-3.5 text-blue-600" />
                       {isHi ? ' चुनें।' : '.'}
                     </span>
@@ -175,7 +175,7 @@ export function PwaInstallButton({ className, variant = 'header' }: PwaInstallBu
                     </span>
                     <span>
                       {isHi ? 'ऊपर दाईं ओर ' : 'Tap '}
-                      <strong>"Add"</strong>
+                      <strong>&quot;Add&quot;</strong>
                       {isHi ? ' पर टैप करें।' : ' on top right.'}
                     </span>
                   </div>

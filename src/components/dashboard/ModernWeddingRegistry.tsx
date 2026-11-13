@@ -719,7 +719,7 @@ export const ModernWeddingRegistry: React.FC<ModernWeddingRegistryProps> = ({ fo
 
                   {item.notes && (
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 italic">
-                      "{item.notes}"
+                      &ldquo;{item.notes}&rdquo;
                     </p>
                   )}
 
@@ -1457,7 +1457,7 @@ export const ModernWeddingRegistry: React.FC<ModernWeddingRegistryProps> = ({ fo
                     {isHi ? 'मेहमान का शुभकामना संदेश' : 'Guest Blessing / Delivery Note'}
                   </span>
                   <p className="italic text-slate-700 dark:text-slate-300">
-                    "{viewingClaimantItem.claimedMessage}"
+                    &ldquo;{viewingClaimantItem.claimedMessage}&rdquo;
                   </p>
                 </div>
               )}

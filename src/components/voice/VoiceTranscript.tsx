@@ -30,7 +30,7 @@ export const VoiceTranscript: React.FC<VoiceTranscriptProps> = ({
         <Volume2 className="mx-auto h-8 w-8 mb-2 opacity-50" />
         <p className="text-sm font-medium">Say something like:</p>
         <p className="text-xs italic mt-1 text-foreground/80">
-          "शर्मा जी ने पाँच हज़ार रुपये दिए" or "Ramesh uncle gave 10,000 rupees"
+          &ldquo;शर्मा जी ने पाँच हज़ार रुपये दिए&rdquo; or &ldquo;Ramesh uncle gave 10,000 rupees&rdquo;
         </p>
       </div>
     );
