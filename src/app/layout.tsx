@@ -24,11 +24,11 @@ const siteUrl = process.env.NEXTAUTH_URL || 'https://shagun-tracker.vercel.app';
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Shagun Tracker — #1 Digital Wedding Gift Registry & Cash Bahi-Khata (विवाह बही-खाता)',
+    default: 'Shagun Tracker — Wedding Registry & Bahi-Khata',
     template: '%s | Shagun Tracker',
   },
   description:
-    'The #1 Indian Wedding Gift Registry & Cash Shagun Bahi-Khata ledger. Curate your wedding wishlist to prevent duplicate gifts, record cash shagun with +₹1 auspicious coin rules, manage guest lifafas, and organize sticky notes.',
+    'Curate your Indian wedding gift wishlist, prevent duplicate gifts, record cash shagun envelopes with +₹1 rules, and manage your traditional bahi-khata.',
   applicationName: 'Shagun Tracker',
   authors: [{ name: 'Shagun Tracker Team', url: siteUrl }],
   generator: 'Next.js',
