@@ -2,7 +2,7 @@
   "name": "Shagun Tracker",
   "short_name": "Shagun",
   "description": "Digital Wedding Gift & Cash Registry with Voice Commands and 3D Envelopes",
-  "start_url": "/dashboard",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#C41E3A",

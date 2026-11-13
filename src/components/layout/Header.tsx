@@ -28,6 +28,7 @@ import { useTheme } from '@/lib/theme/ThemeContext';
 import { useOnlineStatus } from '@/lib/offline/offlineStorage';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { AetherThemeSwitcher } from '@/components/theme/AetherThemeSwitcher';
+import { PwaInstallButton } from '@/components/pwa/PwaInstallButton';
 
 export default function Header() {
   const pathname = usePathname();
@@ -122,6 +123,9 @@ export default function Header() {
               <span className="hidden sm:inline">{isHi ? 'ऑफ़लाइन' : 'Offline'}</span>
             </div>
           )}
+
+          {/* PWA Install / App Download Button */}
+          <PwaInstallButton />
 
           {/* Aether 8-Dot Theme Switcher (Authentic Aether Planner SS) */}
           <AetherThemeSwitcher />

@@ -216,7 +216,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@shagun.app"
+                placeholder=""
                 className="h-10 text-xs"
               />
             </div>
@@ -229,7 +229,7 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder=""
                 className="h-10 text-xs"
               />
             </div>
