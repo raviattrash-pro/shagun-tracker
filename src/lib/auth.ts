@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import { loginSchema } from './validators';
 
 export const authConfig: NextAuthConfig = {
+  trustHost: true,
   providers: [
     // 1. Google OAuth Provider for all guests & users
     GoogleProvider({

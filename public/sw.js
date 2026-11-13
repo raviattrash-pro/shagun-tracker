@@ -2,6 +2,7 @@
 const CACHE_NAME = 'shagun-tracker-v1';
 const STATIC_ASSETS = [
   '/',
+  '/login',
   '/dashboard',
   '/gifts',
   '/registry',
@@ -9,6 +10,8 @@ const STATIC_ASSETS = [
   '/reciprocity',
   '/manifest.json',
   '/offline.html',
+  '/icon-192.png',
+  '/icon-512.png',
   '/assets/currency/inr-500.png',
 ];
 
