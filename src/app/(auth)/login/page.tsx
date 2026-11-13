@@ -237,14 +237,10 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#C0392B] hover:bg-[#A93226] text-white font-extrabold py-5 rounded-2xl shadow-md"
+              className="w-full bg-[#C0392B] hover:bg-[#A93226] text-white font-extrabold py-5 rounded-2xl shadow-md cursor-pointer"
             >
               {loading ? 'Authenticating Admin...' : 'Sign In as Admin'}
             </Button>
-
-            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 text-[11px] text-slate-500 font-mono text-center">
-              Demo Admin: <span className="font-bold text-slate-800 dark:text-white">demo@shagun.app</span> | Pass: <span className="font-bold text-slate-800 dark:text-white">demo123</span>
-            </div>
           </form>
         )}
       </CardContent>
