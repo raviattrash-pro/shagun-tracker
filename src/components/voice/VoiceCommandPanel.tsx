@@ -50,6 +50,7 @@ export const VoiceCommandPanel: React.FC<VoiceCommandPanelProps> = ({
       onParsedResult(result);
       setAutoApplied(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transcript, activeLang]);
 
   const toggleLanguage = () => {

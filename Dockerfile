@@ -21,6 +21,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Generate Prisma client
+ENV DATABASE_URL="file:./dev.db"
+ENV NEXTAUTH_SECRET="build-docker-secret-placeholder-minimum-32"
+ENV NEXTAUTH_URL="http://localhost:3000"
 RUN npx prisma generate
 
 # Build Next.js in standalone mode

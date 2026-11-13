@@ -193,6 +193,7 @@ export const ModernWeddingRegistry: React.FC<ModernWeddingRegistryProps> = ({ fo
       window.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', handleVisibilityChange);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forcedUserId, session?.user?.id]);
 
   useEffect(() => {
