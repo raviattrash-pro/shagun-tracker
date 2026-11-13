@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import {
   Calendar,
@@ -31,6 +32,7 @@ export const CeremonyRegistryPulse: React.FC<CeremonyRegistryPulseProps> = ({
   pendingReciprocityCount = 5,
 }) => {
   const { language } = useLanguage();
+  const { data: session } = useSession();
   const isHi = language === 'hi';
 
   const [copied, setCopied] = useState(false);
@@ -38,9 +40,17 @@ export const CeremonyRegistryPulse: React.FC<CeremonyRegistryPulseProps> = ({
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setShareUrl(`${window.location.origin}/registry`);
+      fetch('/api/wedding-gifts')
+        .then((r) => r.json())
+        .then((d) => {
+          const uid = d.userId || session?.user?.id;
+          setShareUrl(`${window.location.origin}/registry${uid ? `?userId=${uid}` : ''}`);
+        })
+        .catch(() => {
+          setShareUrl(`${window.location.origin}/registry`);
+        });
     }
-  }, []);
+  }, [session?.user?.id]);
 
   const handleCopyLink = () => {
     if (!shareUrl) return;
