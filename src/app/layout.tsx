@@ -103,10 +103,13 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  verification: {
+    google: 'google00f9059f5265dae5',
+  },
   manifest: '/manifest.json',
   icons: {
-    icon: '/assets/currency/inr-500.png',
-    apple: '/assets/currency/inr-500.png',
+    icon: '/icon-192.png',
+    apple: '/icon-512.png',
   },
 };
 
