@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getAuthUser } from '@/lib/auth';
 
 // Default initial items for Indian Wedding Gift Registry
 const INITIAL_REGISTRY_ITEMS = [
@@ -93,19 +94,57 @@ const INITIAL_REGISTRY_ITEMS = [
   },
 ];
 
-// GET: Fetch all wedding gift wishlist items
-export async function GET() {
+// GET: Fetch wedding gift wishlist items for the target user or current session
+export async function GET(req: NextRequest) {
   try {
+    const authUser = await getAuthUser();
+    const { searchParams } = new URL(req.url);
+    const queryUserId = searchParams.get('userId');
+
+    // Find demo user
+    const demoUser = await prisma.user.findUnique({
+      where: { email: 'demo@shagun.app' },
+    });
+
+    // Priority for which user's registry to display:
+    // 1. Explicit query param ?userId=... (used by public shareable links)
+    // 2. Currently logged-in user
+    // 3. Fallback to demo user if not logged in
+    let targetUserId: string | null = null;
+    let targetUserName: string = 'Wedding Host';
+
+    if (queryUserId) {
+      const user = await prisma.user.findUnique({
+        where: { id: queryUserId },
+        select: { id: true, name: true },
+      });
+      if (user) {
+        targetUserId = user.id;
+        targetUserName = user.name;
+      }
+    } else if (authUser?.id) {
+      targetUserId = authUser.id;
+      targetUserName = authUser.name || 'Your Wedding';
+    } else if (demoUser) {
+      targetUserId = demoUser.id;
+      targetUserName = demoUser.name;
+    }
+
+    // Query items for this specific user
     let items = await prisma.weddingGiftItem.findMany({
+      where: targetUserId ? { userId: targetUserId } : {},
       orderBy: { createdAt: 'asc' },
     });
 
-    // Auto-seed initial items if empty
-    if (items.length === 0) {
+    // If target is demo user and has 0 items, seed demo items
+    if (items.length === 0 && targetUserId === demoUser?.id) {
       for (const item of INITIAL_REGISTRY_ITEMS) {
-        await prisma.weddingGiftItem.create({ data: item });
+        await prisma.weddingGiftItem.create({
+          data: { ...item, userId: targetUserId },
+        });
       }
       items = await prisma.weddingGiftItem.findMany({
+        where: { userId: targetUserId },
         orderBy: { createdAt: 'asc' },
       });
     }
@@ -120,6 +159,8 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
+      userId: targetUserId,
+      hostName: targetUserName,
       data: items,
       summary: {
         totalCount,
@@ -141,9 +182,46 @@ export async function GET() {
 // POST: Add a new gift to the registry wishlist
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { title, category, suggestedStore, storeUrl, approxCost, notes, claimedBy, claimedByPhone } = body;
+    const authUser = await getAuthUser();
+    const demoUser = await prisma.user.findUnique({
+      where: { email: 'demo@shagun.app' },
+    });
 
+    // Determine owner of new gift item
+    const targetUserId = authUser?.id || demoUser?.id || null;
+
+    const body = await req.json();
+    const { action, itemId, title, category, suggestedStore, storeUrl, approxCost, notes, claimedBy, claimedByPhone } = body;
+
+    // Handle CLAIM action from modal
+    if (action === 'CLAIM') {
+      const { itemId, claimedBy, claimedByPhone, claimedByEmail, claimedMessage } = body;
+      if (!itemId || !claimedBy?.trim()) {
+        return NextResponse.json(
+          { success: false, error: 'Item ID and your name are required' },
+          { status: 400 }
+        );
+      }
+      const email = authUser?.email || claimedByEmail?.trim() || null;
+      const isVerified = Boolean(authUser?.email);
+
+      const updated = await prisma.weddingGiftItem.update({
+        where: { id: itemId },
+        data: {
+          status: 'CLAIMED',
+          claimedBy: authUser?.name || claimedBy.trim(),
+          claimedByPhone: claimedByPhone?.trim() || null,
+          claimedByEmail: email,
+          claimedMessage: claimedMessage?.trim() || null,
+          claimedAt: new Date(),
+          isVerified: isVerified,
+          claimantUserId: authUser?.id || null,
+        },
+      });
+      return NextResponse.json({ success: true, data: updated });
+    }
+
+    // Handle CREATE action
     if (!title || !title.trim()) {
       return NextResponse.json(
         { success: false, error: 'Gift item title is required' },
@@ -153,6 +231,7 @@ export async function POST(req: NextRequest) {
 
     const newItem = await prisma.weddingGiftItem.create({
       data: {
+        userId: targetUserId,
         title: title.trim(),
         category: category?.trim() || 'Home',
         suggestedStore: suggestedStore?.trim() || null,
@@ -175,11 +254,12 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// PATCH: Claim or Unclaim an item in the live registry
+// PATCH: Claim, Unclaim, or Edit an item in the live registry
 export async function PATCH(req: NextRequest) {
   try {
+    const authUser = await getAuthUser();
     const body = await req.json();
-    const { id, action, claimedBy, claimedByPhone } = body;
+    const { id, action, claimedBy, claimedByPhone, claimedByEmail, claimedMessage } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -196,12 +276,20 @@ export async function PATCH(req: NextRequest) {
           { status: 400 }
         );
       }
+      const email = authUser?.email || claimedByEmail?.trim() || null;
+      const isVerified = Boolean(authUser?.email);
+
       updated = await prisma.weddingGiftItem.update({
         where: { id },
         data: {
           status: 'CLAIMED',
-          claimedBy: claimedBy.trim(),
+          claimedBy: authUser?.name || claimedBy.trim(),
           claimedByPhone: claimedByPhone?.trim() || null,
+          claimedByEmail: email,
+          claimedMessage: claimedMessage?.trim() || null,
+          claimedAt: new Date(),
+          isVerified: isVerified,
+          claimantUserId: authUser?.id || null,
         },
       });
     } else if (action === 'unclaim') {
@@ -211,11 +299,16 @@ export async function PATCH(req: NextRequest) {
           status: 'AVAILABLE',
           claimedBy: null,
           claimedByPhone: null,
+          claimedByEmail: null,
+          claimedAt: null,
+          claimedMessage: null,
+          isVerified: false,
+          claimantUserId: null,
         },
       });
     } else {
       // General field update (e.g. from Edit modal)
-      const { title, category, suggestedStore, storeUrl, approxCost, notes, status, claimedBy, claimedByPhone } = body;
+      const { title, category, suggestedStore, storeUrl, approxCost, notes, status, claimedBy, claimedByPhone, claimedByEmail, claimedMessage } = body;
       const updateData: any = {};
       if (title !== undefined) updateData.title = title?.trim();
       if (category !== undefined) updateData.category = category?.trim();
@@ -226,6 +319,8 @@ export async function PATCH(req: NextRequest) {
       if (status !== undefined) updateData.status = status;
       if (claimedBy !== undefined) updateData.claimedBy = claimedBy?.trim() || null;
       if (claimedByPhone !== undefined) updateData.claimedByPhone = claimedByPhone?.trim() || null;
+      if (claimedByEmail !== undefined) updateData.claimedByEmail = claimedByEmail?.trim() || null;
+      if (claimedMessage !== undefined) updateData.claimedMessage = claimedMessage?.trim() || null;
 
       updated = await prisma.weddingGiftItem.update({
         where: { id },

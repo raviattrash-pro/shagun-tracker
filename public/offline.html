@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ऑफ़लाइन मोड (Offline Mode) | Shagun Tracker</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #FFF9F3 0%, #F5E8DA 100%);
+      color: #2D3748;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(192, 57, 43, 0.2);
+      box-shadow: 0 20px 40px rgba(139, 29, 44, 0.08);
+      border-radius: 28px;
+      padding: 40px 28px;
+      max-width: 440px;
+      width: 100%;
+    }
+    .icon-badge {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+      background: #FEE2E2;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+    h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #8B1D2C;
+      margin-bottom: 8px;
+    }
+    p {
+      font-size: 14px;
+      color: #64748B;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    .btn {
+      display: inline-block;
+      width: 100%;
+      background: #8B1D2C;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 14px 20px;
+      border-radius: 16px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(139, 29, 44, 0.25);
+      transition: transform 0.15s ease;
+    }
+    .btn:active {
+      transform: scale(0.98);
+    }
+    .btn-secondary {
+      background: transparent;
+      color: #8B1D2C;
+      border: 1.5px solid #8B1D2C;
+      box-shadow: none;
+      margin-top: 10px;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #FEF3C7;
+      color: #92400E;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: #D97706;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="status-pill">
+      <span class="dot"></span>
+      <span>कोई इंटरनेट कनेक्शन नहीं (Offline)</span>
+    </div>
+    <div class="icon-badge">📡</div>
+    <h1>आप ऑफ़लाइन हैं</h1>
+    <p>
+      इंटरनेट उपलब्ध नहीं है, लेकिन आपका शगुन बही-खाता और सहेजा हुआ डेटा सुरक्षित है। इंटरनेट आने पर यह स्वतः सिंक हो जाएगा।
+    </p>
+    <button class="btn" onclick="window.location.reload()">पुनः प्रयास करें (Try Again)</button>
+    <a href="/dashboard" class="btn btn-secondary">कैश्ड बही-खाता खोलें</a>
+  </div>
+</body>
+</html>

@@ -1,86 +1,184 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Fredoka:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  /* ─── Light Mode Variables (default for traditional, clay, neomorphic) ─── */
+  /* ─── Light Mode Variables (Aether Warm Peach Default) ─── */
   :root {
-    --background: 40 33% 98%;
-    --foreground: 24 10% 10%;
-    --card: 0 0% 100%;
-    --card-foreground: 24 10% 10%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 24 10% 10%;
-    --primary: 348 65% 33%;
+    --background: 34 85% 94%;
+    --foreground: 20 25% 20%;
+    --card: 36 100% 98%;
+    --card-foreground: 20 25% 18%;
+    --popover: 36 100% 98%;
+    --popover-foreground: 20 25% 18%;
+    --primary: 6 78% 57%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 37 92% 50%;
-    --secondary-foreground: 24 10% 10%;
-    --muted: 40 20% 93%;
-    --muted-foreground: 25 5% 45%;
-    --accent: 40 20% 93%;
-    --accent-foreground: 24 10% 10%;
+    --secondary: 35 90% 60%;
+    --secondary-foreground: 20 30% 15%;
+    --muted: 33 50% 90%;
+    --muted-foreground: 24 15% 48%;
+    --accent: 35 60% 92%;
+    --accent-foreground: 20 25% 18%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 60 9.1% 97.8%;
-    --border: 24 6% 83%;
-    --input: 24 6% 83%;
-    --ring: 348 65% 33%;
-    --radius: 1rem;
+    --border: 30 40% 86%;
+    --input: 30 40% 88%;
+    --ring: 6 78% 57%;
+    --radius: 1.5rem;
   }
 
-  /* ─── Dark Mode Variables ─── */
-  .dark {
-    --background: 222 40% 7%;
-    --foreground: 0 0% 100%;
-    --card: 222 41% 10%;
-    --card-foreground: 0 0% 98%;
-    --popover: 222 41% 10%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 221 83% 53%;
+  /* ─── Cyan Sky Theme (Aether Cyan Reference) ─── */
+  .theme-clay, html.theme-clay {
+    --background: 191 85% 92%;
+    --foreground: 195 45% 18%;
+    --card: 192 100% 98%;
+    --card-foreground: 195 45% 18%;
+    --popover: 192 100% 98%;
+    --popover-foreground: 195 45% 18%;
+    --primary: 187 85% 40%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 168 83% 62%;
-    --secondary-foreground: 222 40% 7%;
-    --muted: 222 30% 14%;
+    --secondary: 178 70% 65%;
+    --secondary-foreground: 195 45% 18%;
+    --muted: 190 40% 88%;
+    --muted-foreground: 195 25% 45%;
+    --border: 190 45% 82%;
+    --input: 190 45% 84%;
+    --ring: 187 85% 40%;
+  }
+
+  /* ─── Sage Lime Theme (Aether Botanical) ─── */
+  .theme-sage, html.theme-sage {
+    --background: 140 60% 92%;
+    --foreground: 150 45% 18%;
+    --card: 140 100% 98%;
+    --card-foreground: 150 45% 18%;
+    --popover: 140 100% 98%;
+    --popover-foreground: 150 45% 18%;
+    --primary: 142 70% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 135 60% 65%;
+    --secondary-foreground: 150 45% 18%;
+    --muted: 140 35% 88%;
+    --muted-foreground: 150 20% 45%;
+    --border: 140 40% 82%;
+    --input: 140 40% 84%;
+    --ring: 142 70% 40%;
+  }
+
+  /* ─── Dark Mode Variables (Aether Midnight Navy Reference) ─── */
+  .dark, html.dark {
+    --background: 216 50% 12%;
+    --foreground: 210 40% 98%;
+    --card: 215 45% 16%;
+    --card-foreground: 210 40% 98%;
+    --popover: 215 45% 16%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 188 95% 50%;
+    --primary-foreground: 215 50% 10%;
+    --secondary: 199 89% 48%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 215 35% 22%;
     --muted-foreground: 215 20% 65%;
-    --accent: 222 30% 16%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 215 35% 24%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 60 9.1% 97.8%;
-    --border: 220 30% 17%;
-    --input: 220 30% 17%;
-    --ring: 221 83% 53%;
-    --radius: 1rem;
+    --border: 215 35% 24%;
+    --input: 215 35% 24%;
+    --ring: 188 95% 50%;
   }
 
-  /* ─── Clay Mode Overrides ─── */
-  .theme-clay {
-    --background: 12 54% 96%;
-    --foreground: 220 13% 18%;
+  /* ─── Royal Lavender Theme (Aether Velvet) ─── */
+  .theme-royal, html.theme-royal {
+    --background: 260 70% 94%;
+    --foreground: 260 45% 20%;
+    --card: 260 100% 99%;
+    --card-foreground: 260 45% 20%;
+    --popover: 260 100% 99%;
+    --popover-foreground: 260 45% 20%;
+    --primary: 258 85% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 250 70% 70%;
+    --secondary-foreground: 260 45% 20%;
+    --muted: 260 30% 90%;
+    --muted-foreground: 260 20% 48%;
+    --border: 260 35% 85%;
+    --input: 260 35% 85%;
+    --ring: 258 85% 55%;
+  }
+
+  /* ─── Blush Rose Theme (Aether Bloom) ─── */
+  .theme-rose, html.theme-rose {
+    --background: 345 80% 94%;
+    --foreground: 345 45% 20%;
+    --card: 345 100% 99%;
+    --card-foreground: 345 45% 20%;
+    --popover: 345 100% 99%;
+    --popover-foreground: 345 45% 20%;
+    --primary: 346 84% 56%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 340 70% 70%;
+    --secondary-foreground: 345 45% 20%;
+    --muted: 345 35% 90%;
+    --muted-foreground: 345 20% 48%;
+    --border: 345 40% 86%;
+    --input: 345 40% 86%;
+    --ring: 346 84% 56%;
+  }
+
+  /* ─── Aqua Mint Theme (Aether Ocean) ─── */
+  .theme-mint, html.theme-mint {
+    --background: 170 70% 92%;
+    --foreground: 175 45% 18%;
+    --card: 170 100% 98%;
+    --card-foreground: 175 45% 18%;
+    --popover: 170 100% 98%;
+    --popover-foreground: 175 45% 18%;
+    --primary: 174 85% 38%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 165 65% 65%;
+    --secondary-foreground: 175 45% 18%;
+    --muted: 170 35% 88%;
+    --muted-foreground: 175 20% 45%;
+    --border: 170 40% 82%;
+    --input: 170 40% 84%;
+    --ring: 174 85% 38%;
+  }
+
+  /* ─── Warm Ivory Cream Theme (Aether Sun) ─── */
+  .theme-cream, html.theme-cream {
+    --background: 45 90% 93%;
+    --foreground: 35 40% 20%;
+    --card: 45 100% 98%;
+    --card-foreground: 35 40% 20%;
+    --popover: 45 100% 98%;
+    --popover-foreground: 35 40% 20%;
+    --primary: 38 92% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 42 80% 65%;
+    --secondary-foreground: 35 40% 20%;
+    --muted: 45 45% 88%;
+    --muted-foreground: 35 25% 45%;
+    --border: 45 45% 82%;
+    --input: 45 45% 84%;
+    --ring: 38 92% 50%;
+  }
+
+  /* ─── Clean Light Theme (Aether Modern Clean) ─── */
+  .theme-neomorphic, html.theme-neomorphic {
+    --background: 210 30% 96%;
+    --foreground: 215 25% 20%;
     --card: 0 0% 100%;
-    --card-foreground: 220 13% 18%;
+    --card-foreground: 215 25% 20%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 18%;
-    --muted: 12 30% 92%;
-    --muted-foreground: 215 8% 45%;
-    --border: 12 20% 88%;
-    --input: 12 20% 88%;
-    --ring: 0 62% 73%;
-  }
-
-  /* ─── Neomorphic Light Mode Overrides ─── */
-  .theme-neomorphic {
-    --background: 222 33% 93%;
-    --foreground: 222 47% 11%;
-    --card: 222 33% 93%;
-    --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --muted: 222 20% 88%;
-    --muted-foreground: 215 13% 45%;
-    --border: 222 15% 82%;
-    --input: 222 15% 82%;
-    --ring: 221 83% 53%;
+    --popover-foreground: 215 25% 20%;
+    --muted: 210 20% 92%;
+    --muted-foreground: 215 15% 50%;
+    --border: 210 20% 86%;
+    --input: 210 20% 86%;
+    --ring: 215 25% 20%;
   }
 }
 
@@ -89,55 +187,84 @@
     @apply border-border;
   }
 
-  html, html.theme-traditional {
-    background-color: #FDFCF7;
+  /* ─── Theme Ambient Backgrounds (Matching Aether SS) ─── */
+  html.theme-traditional,
+  html:not([class*="theme-"]):not(.dark) {
+    background: #F4CCA4;
+    background: radial-gradient(circle at 10% 10%, #FDF4E7 0%, #F7D4AA 50%, #EFC092 100%);
+    background-attachment: fixed;
     color-scheme: light;
   }
 
   html.dark {
-    background-color: #0B0F19;
+    background: #0E1B2E;
+    background: radial-gradient(circle at 20% 15%, #182B45 0%, #0F1D30 55%, #0A1320 100%);
+    background-attachment: fixed;
     color-scheme: dark;
   }
 
-  html.theme-neomorphic {
-    background-color: #E8EDF5;
+  html.theme-clay {
+    background: #8FE5F5;
+    background: radial-gradient(circle at 20% 15%, #E6FAFD 0%, #9FEBF8 50%, #76DEF2 100%);
+    background-attachment: fixed;
     color-scheme: light;
   }
 
-  html.theme-clay {
-    background-color: #FBF0EE;
+  html.theme-sage {
+    background: #C7E8CA;
+    background: radial-gradient(circle at 20% 15%, #F0FDF4 0%, #DCFCE7 50%, #BBF7D0 100%);
+    background-attachment: fixed;
+    color-scheme: light;
+  }
+
+  html.theme-royal {
+    background: #DDD6FE;
+    background: radial-gradient(circle at 20% 15%, #FAF5FF 0%, #EDE9FE 50%, #DDD6FE 100%);
+    background-attachment: fixed;
+    color-scheme: light;
+  }
+
+  html.theme-rose {
+    background: #FECDD3;
+    background: radial-gradient(circle at 20% 15%, #FFF1F2 0%, #FFE4E6 50%, #FECDD3 100%);
+    background-attachment: fixed;
+    color-scheme: light;
+  }
+
+  html.theme-mint {
+    background: #99F6E4;
+    background: radial-gradient(circle at 20% 15%, #F0FDFA 0%, #CCFBF1 50%, #99F6E4 100%);
+    background-attachment: fixed;
+    color-scheme: light;
+  }
+
+  html.theme-cream {
+    background: #FDE68A;
+    background: radial-gradient(circle at 20% 15%, #FFFDF5 0%, #FEF3C7 50%, #FDE68A 100%);
+    background-attachment: fixed;
+    color-scheme: light;
+  }
+
+  html.theme-neomorphic {
+    background: #E8EEF5;
+    background: radial-gradient(circle at 20% 15%, #FFFFFF 0%, #E8EEF5 60%, #D8E2ED 100%);
+    background-attachment: fixed;
     color-scheme: light;
   }
 
   body {
-    background-color: #FDFCF7;
-    color: #1F2937;
-    font-feature-settings: 'rlig' 1, 'calt' 1;
+    background: transparent;
+    color: hsl(var(--foreground));
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
   }
 
-  html.dark body {
-    background-color: #0B0F19 !important;
-    color: #F8FAFC !important;
-  }
-
-  html.theme-neomorphic body {
-    background-color: #E8EDF5 !important;
-    color: #1E293B !important;
-  }
-
-  html.theme-clay body {
-    background-color: #FBF0EE !important;
-    color: #2D3748 !important;
-  }
-
-  /* Hide scrollbar for Chrome, Safari and Opera */
+  /* Scrollbars */
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-
-  /* Hide scrollbar for IE, Edge and Firefox */
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -146,231 +273,237 @@
 
 @layer utilities {
   /* ───────────────────────────────────────────────────────────── */
-  /* CLAYMORPHISM 3D DESIGN SYSTEM (Matching SS media_1793808971703)*/
+  /* AETHER PLANNER SIGNATURE CARD DESIGN SYSTEM                   */
+  /* Inset light glow + Soft Drop Shadow + 28px/32px Radius        */
   /* ───────────────────────────────────────────────────────────── */
 
-  /* Clay Card - Puffy inflated 3D matte card */
-  .clay-card {
-    background: #FFFFFF;
+  /* 1. Main Aether Card (Warm Peach) */
+  .aether-card {
+    background: rgba(255, 248, 240, 0.88);
+    backdrop-filter: blur(16px);
     border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.95);
     box-shadow: 
-      0 16px 32px 0 rgba(220, 140, 135, 0.14),
-      0 4px 8px 0 rgba(0, 0, 0, 0.03),
-      inset 0 3px 6px 0 rgba(255, 255, 255, 0.95),
-      inset 0 -4px 8px 0 rgba(220, 140, 135, 0.10);
-    border: 1px solid rgba(255, 255, 255, 0.85);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      0 12px 30px -4px rgba(190, 130, 80, 0.16),
+      0 4px 10px rgba(0, 0, 0, 0.02),
+      inset 0 2px 4px rgba(255, 255, 255, 1),
+      inset 0 -2px 4px rgba(220, 160, 110, 0.15);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .clay-card:hover {
+  .aether-card:hover {
     transform: translateY(-2px);
     box-shadow: 
-      0 20px 40px 0 rgba(220, 140, 135, 0.18),
-      0 6px 12px 0 rgba(0, 0, 0, 0.04),
-      inset 0 3px 6px 0 rgba(255, 255, 255, 0.95),
-      inset 0 -4px 8px 0 rgba(220, 140, 135, 0.12);
+      0 18px 36px -4px rgba(190, 130, 80, 0.22),
+      0 6px 14px rgba(0, 0, 0, 0.03),
+      inset 0 2px 4px rgba(255, 255, 255, 1);
   }
 
-  /* Clay Card Soft Peach Tint */
-  .clay-card-peach {
-    background: linear-gradient(135deg, #FDECE9 0%, #FAD9D5 100%);
-    border-radius: 32px;
+  /* 2. Theme Specific Card Adapters */
+  html.dark .aether-card {
+    background: rgba(19, 34, 56, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 
-      0 18px 36px 0 rgba(250, 124, 119, 0.16),
-      0 4px 10px 0 rgba(0, 0, 0, 0.03),
-      inset 0 4px 8px 0 rgba(255, 255, 255, 0.9),
-      inset 0 -4px 8px 0 rgba(210, 90, 85, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.9);
+      0 14px 34px -4px rgba(0, 0, 0, 0.45),
+      0 4px 10px rgba(0, 0, 0, 0.2),
+      inset 0 1px 2px rgba(255, 255, 255, 0.18),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.35);
   }
 
-  /* Clay Debossed Inset - For search bars, inputs, tracks */
-  .clay-inset {
-    background: #F8ECE9;
+  html.theme-clay .aether-card {
+    background: rgba(240, 252, 255, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 
+      0 14px 32px -4px rgba(60, 175, 200, 0.2),
+      0 4px 8px rgba(0, 0, 0, 0.02),
+      inset 0 2px 4px rgba(255, 255, 255, 1),
+      inset 0 -2px 4px rgba(100, 195, 215, 0.2);
+  }
+
+  html.theme-sage .aether-card {
+    background: rgba(242, 253, 245, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 
+      0 14px 32px -4px rgba(70, 180, 110, 0.2),
+      0 4px 8px rgba(0, 0, 0, 0.02),
+      inset 0 2px 4px rgba(255, 255, 255, 1),
+      inset 0 -2px 4px rgba(100, 200, 130, 0.2);
+  }
+
+  html.theme-royal .aether-card {
+    background: rgba(250, 247, 255, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 
+      0 14px 32px -4px rgba(140, 110, 220, 0.2),
+      0 4px 8px rgba(0, 0, 0, 0.02),
+      inset 0 2px 4px rgba(255, 255, 255, 1),
+      inset 0 -2px 4px rgba(160, 130, 230, 0.2);
+  }
+
+  html.theme-rose .aether-card {
+    background: rgba(255, 246, 248, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 
+      0 14px 32px -4px rgba(230, 100, 140, 0.2),
+      0 4px 8px rgba(0, 0, 0, 0.02),
+      inset 0 2px 4px rgba(255, 255, 255, 1),
+      inset 0 -2px 4px rgba(240, 130, 160, 0.2);
+  }
+
+  html.theme-mint .aether-card {
+    background: rgba(240, 253, 250, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 
+      0 14px 32px -4px rgba(45, 180, 160, 0.2),
+      0 4px 8px rgba(0, 0, 0, 0.02),
+      inset 0 2px 4px rgba(255, 255, 255, 1),
+      inset 0 -2px 4px rgba(80, 200, 180, 0.2);
+  }
+
+  html.theme-cream .aether-card {
+    background: rgba(255, 253, 242, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 
+      0 14px 32px -4px rgba(200, 160, 60, 0.2),
+      0 4px 8px rgba(0, 0, 0, 0.02),
+      inset 0 2px 4px rgba(255, 255, 255, 1),
+      inset 0 -2px 4px rgba(220, 180, 90, 0.2);
+  }
+
+  /* 3. Debossed Inset Well (For Search, Input fields, Progress tracks, List items) */
+  .aether-inset {
+    background: rgba(243, 230, 215, 0.7);
     border-radius: 9999px;
-    box-shadow: 
-      inset 0 3px 6px 0 rgba(180, 100, 95, 0.12),
-      inset 0 -2px 4px 0 rgba(255, 255, 255, 0.9),
-      0 2px 4px 0 rgba(255, 255, 255, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.6);
-  }
-
-  /* Clay Sidebar - Warm Coral / Salmon Pill Container */
-  .clay-sidebar {
-    background: linear-gradient(180deg, #FA837F 0%, #FA726C 100%);
-    border-radius: 36px;
     box-shadow: 
-      0 20px 40px 0 rgba(250, 114, 108, 0.28),
-      inset 0 3px 6px 0 rgba(255, 255, 255, 0.45),
-      inset 0 -4px 8px 0 rgba(180, 50, 45, 0.25);
+      inset 0 2px 5px rgba(150, 100, 60, 0.16),
+      inset 0 -1px 2px rgba(255, 255, 255, 0.9),
+      0 1px 2px rgba(255, 255, 255, 0.4);
   }
 
-  /* Clay Active Pill Button on Sidebar */
-  .clay-nav-active {
-    background: #FFFFFF;
-    color: #FA7C77;
+  .aether-inset-box {
+    background: rgba(245, 232, 218, 0.65);
     border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
     box-shadow: 
-      0 8px 20px 0 rgba(180, 50, 45, 0.18),
-      inset 0 3px 5px 0 rgba(255, 255, 255, 0.95),
-      inset 0 -2px 4px 0 rgba(240, 140, 135, 0.2);
+      inset 0 2px 5px rgba(150, 100, 60, 0.14),
+      inset 0 -1px 2px rgba(255, 255, 255, 0.9);
   }
 
-  /* Clay Inactive Nav Item */
-  .clay-nav-item {
-    color: rgba(255, 255, 255, 0.9);
-    border-radius: 18px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  html.dark .aether-inset,
+  html.dark .aether-inset-box {
+    background: rgba(12, 22, 38, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 
+      inset 0 2px 6px rgba(0, 0, 0, 0.6),
+      inset 0 -1px 1px rgba(255, 255, 255, 0.05);
   }
 
-  .clay-nav-item:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: #FFFFFF;
+  html.theme-clay .aether-inset,
+  html.theme-clay .aether-inset-box {
+    background: rgba(205, 240, 248, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 
+      inset 0 2px 5px rgba(30, 130, 160, 0.15),
+      inset 0 -1px 2px rgba(255, 255, 255, 0.95);
   }
 
-  /* Clay Button - Coral */
-  .clay-btn-coral {
-    background: linear-gradient(135deg, #FA837F 0%, #FA726C 100%);
-    color: #FFFFFF;
+  /* 4. Aether Pill Buttons */
+  .aether-btn-pill {
     border-radius: 9999px;
+    font-weight: 700;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: 
-      0 8px 18px 0 rgba(250, 114, 108, 0.35),
-      inset 0 2px 4px 0 rgba(255, 255, 255, 0.45),
-      inset 0 -3px 6px 0 rgba(180, 50, 45, 0.25);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      0 4px 12px rgba(0, 0, 0, 0.06),
+      inset 0 1px 2px rgba(255, 255, 255, 0.8);
   }
 
-  .clay-btn-coral:hover {
+  .aether-btn-pill:hover {
     transform: translateY(-1px);
-    box-shadow: 
-      0 10px 22px 0 rgba(250, 114, 108, 0.42),
-      inset 0 2px 4px 0 rgba(255, 255, 255, 0.5),
-      inset 0 -3px 6px 0 rgba(180, 50, 45, 0.25);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
   }
 
-  .clay-btn-coral:active {
+  .aether-btn-pill:active {
     transform: translateY(1px);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.12);
+  }
+
+  /* 5. Aether Header Badge */
+  .aether-header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  }
+
+  /* 6. Aether Round Play/Action Button (Like 'START' in Zen Breath) */
+  .aether-start-btn {
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: #FFFFFF;
+    color: #C0392B;
+    border: 2px solid #C0392B;
     box-shadow: 
-      0 4px 8px 0 rgba(250, 114, 108, 0.25),
-      inset 0 2px 4px 0 rgba(180, 50, 45, 0.35);
+      0 0 16px rgba(192, 57, 43, 0.35),
+      inset 0 1px 2px rgba(255, 255, 255, 0.9);
+    transition: all 0.2s ease;
   }
 
-  /* Clay Pill Badges */
-  .clay-badge-yellow {
-    background: #FFF4DC;
-    color: #D9822B;
-    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.9), 0 4px 8px rgba(217, 130, 43, 0.12);
-    border-radius: 14px;
+  .aether-start-btn:hover {
+    transform: scale(1.05);
+    background: #C0392B;
+    color: #FFFFFF;
+    box-shadow: 0 0 22px rgba(192, 57, 43, 0.55);
   }
 
-  .clay-badge-purple {
-    background: #F3EBF9;
-    color: #8B5CF6;
-    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.9), 0 4px 8px rgba(139, 92, 246, 0.12);
-    border-radius: 14px;
+  html.dark .aether-start-btn {
+    color: #00E5FF;
+    border-color: #00E5FF;
+    background: rgba(0, 229, 255, 0.08);
+    box-shadow: 0 0 16px rgba(0, 229, 255, 0.4);
   }
 
-  .clay-badge-green {
-    background: #E8F8F0;
-    color: #10B981;
-    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.9), 0 4px 8px rgba(16, 185, 129, 0.12);
-    border-radius: 14px;
+  html.dark .aether-start-btn:hover {
+    background: #00E5FF;
+    color: #0A1320;
+    box-shadow: 0 0 24px rgba(0, 229, 255, 0.7);
   }
 
-  .clay-badge-pink {
-    background: #FEECEB;
-    color: #FA7C77;
-    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.9), 0 4px 8px rgba(250, 124, 119, 0.12);
-    border-radius: 14px;
+  html.theme-clay .aether-start-btn {
+    color: #0097A7;
+    border-color: #0097A7;
+    background: #FFFFFF;
+    box-shadow: 0 0 16px rgba(0, 151, 167, 0.35);
   }
 
-  .clay-badge-blue {
-    background: #E8F2FE;
-    color: #3B82F6;
-    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.9), 0 4px 8px rgba(59, 130, 246, 0.12);
-    border-radius: 14px;
+  html.theme-clay .aether-start-btn:hover {
+    background: #0097A7;
+    color: #FFFFFF;
   }
 
-  /* ───────────────────────────────────────────────────────────── */
-  /* NEOMORPHISM & WIX FINTECH UTILITIES                           */
-  /* ───────────────────────────────────────────────────────────── */
-  .neomorph-flat {
-    background: #E8EDF5;
-    box-shadow: 9px 9px 20px #cad4e2, -9px -9px 20px #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.6);
+  /* 7. Clay and Legacy Classes compatibility */
+  .clay-card {
+    @apply aether-card;
   }
 
-  .neomorph-inset {
-    background: #E8EDF5;
-    box-shadow: inset 4px 4px 8px #cad4e2, inset -4px -4px 8px #ffffff;
-  }
-
-  .neomorph-btn {
-    background: #E8EDF5;
-    box-shadow: 6px 6px 14px #cad4e2, -6px -6px 14px #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .neomorph-btn:hover {
-    box-shadow: 8px 8px 18px #cad4e2, -8px -8px 18px #ffffff;
-    transform: translateY(-1px);
-  }
-
-  .neomorph-btn:active, .neomorph-btn.active {
-    box-shadow: inset 3px 3px 6px #cad4e2, inset -3px -3px 6px #ffffff;
-    transform: translateY(1px);
-  }
-
-  /* Wix Studio Floating & Glowing Animations */
-  @keyframes float-slow {
-    0%, 100% {
-      transform: translateY(0px) rotate(0deg);
-    }
-    50% {
-      transform: translateY(-12px) rotate(2deg);
-    }
-  }
-
-  @keyframes float-reverse {
-    0%, 100% {
-      transform: translateY(0px) rotate(0deg);
-    }
-    50% {
-      transform: translateY(12px) rotate(-2deg);
-    }
-  }
-
-  @keyframes shine-coin {
-    0% {
-      filter: drop-shadow(0 0 10px rgba(230, 202, 101, 0.3));
-    }
-    50% {
-      filter: drop-shadow(0 0 25px rgba(230, 202, 101, 0.7));
-    }
-    100% {
-      filter: drop-shadow(0 0 10px rgba(230, 202, 101, 0.3));
-    }
-  }
-
-  .animate-float-slow {
-    animation: float-slow 6s ease-in-out infinite;
-  }
-
-  .animate-float-reverse {
-    animation: float-reverse 7s ease-in-out infinite;
-  }
-
-  .animate-shine-coin {
-    animation: shine-coin 4s ease-in-out infinite;
-  }
-
-  .text-gradient-shagun {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #C41E3A 0%, #D4AF37 100%);
-  }
-
-  .bg-gradient-shagun {
-    background-image: linear-gradient(135deg, #C41E3A 0%, #D4AF37 100%);
+  .clay-inset {
+    @apply aether-inset;
   }
 
   .safe-bottom {

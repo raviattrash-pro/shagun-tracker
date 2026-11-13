@@ -25,7 +25,6 @@ import {
   Tag,
   Check,
   X,
-  Mic,
   Pencil,
   Trash2,
 } from 'lucide-react';
@@ -196,7 +195,7 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
           approxCost: editCost ? Number(editCost) : null,
           notes: editNotes.trim() || null,
           status: editStatus,
-          claimedBy: editStatus === 'CLAIMED' ? (editClaimedBy.trim() || 'Relative') : null,
+          claimedBy: editStatus === 'CLAIMED' ? (editClaimedBy.trim() || (isHi ? 'रिश्तेदार' : 'Relative')) : null,
           claimedByPhone: editStatus === 'CLAIMED' ? (editClaimedByPhone.trim() || null) : null,
         }),
       });
@@ -215,7 +214,7 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
   };
 
   const handleDeleteItem = async (id: string, title: string) => {
-    if (!confirm(isHi ? `क्या आप वाकई "${title}" को उपहार सूची से हटाना चाहते हैं?` : `Are you sure you want to delete "${title}"?`)) return;
+    if (!confirm(isHi ? `क्या आप वाकई "${title}" को उपहार सूची से हटाना चाहते हैं?` : `Are you sure you want to delete "${title}" from the registry?`)) return;
     setDeletingItem(true);
     try {
       const res = await fetch(`/api/wedding-gifts?id=${id}`, {
@@ -323,7 +322,11 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
 
   // Handle Unclaiming a Gift Item
   const handleUnclaim = async (id: string, title: string) => {
-    const confirmed = window.confirm(`क्या आप "${title}" से अपना नाम हटाना चाहते हैं ताकि कोई अन्य रिश्तेदार इसे उपहार में दे सके?`);
+    const confirmed = window.confirm(
+      isHi
+        ? `क्या आप "${title}" से अपना नाम हटाना चाहते हैं ताकि कोई अन्य रिश्तेदार इसे उपहार में दे सके?`
+        : `Do you want to release the claim on "${title}" so others can bring it?`
+    );
     if (!confirmed) return;
 
     try {
@@ -385,8 +388,8 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
       {/* ───────────────────────────────────────────────────────────── */}
       {/* TRADITIONAL BAHI-KHATA BOOK BINDER / REGISTER CARD            */}
       {/* ───────────────────────────────────────────────────────────── */}
-      <div className="rounded-[28px] overflow-hidden border-2 border-[#8B1D2C]/30 bg-[#FDFCF7] shadow-[0_20px_45px_rgba(40,15,10,0.12),0_4px_12px_rgba(0,0,0,0.06)]">
-        {/* Top Auspicious Red Cloth Spine Header (पारंपरिक लाल बही-खाता जिल्द) */}
+      <div className="rounded-[28px] overflow-hidden border border-[#8B1D2C]/20 bg-[#FDFCF7] shadow-[0_16px_40px_rgba(40,15,10,0.08),0_2px_8px_rgba(0,0,0,0.04)]">
+        {/* Top Auspicious Red Cloth Spine Header */}
         <header className="bg-gradient-to-r from-[#7A1522] via-[#8B1D2C] to-[#6A121E] text-amber-100 px-5 sm:px-8 py-5 border-b-2 border-amber-400/40 relative overflow-hidden">
           {/* Subtle Golden Zari Weave Watermark Pattern */}
           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
@@ -396,14 +399,16 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
             <div className="text-center md:text-left space-y-1">
               <div className="flex items-center justify-center md:justify-start gap-2 text-amber-300 font-serif font-black text-xs sm:text-sm tracking-widest">
                 <span>ॐ</span>
-                <span>|| श्री गणेशाय नमः ||</span>
-                <span>|| शुभ लाभ ||</span>
+                <span>{isHi ? '|| श्री गणेशाय नमः ||' : '|| Shri Ganeshaya Namah ||'}</span>
+                <span>{isHi ? '|| शुभ लाभ ||' : '|| Shubh Laabh ||'}</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-serif font-black text-amber-50 tracking-wide drop-shadow-sm flex items-center justify-center md:justify-start gap-2">
-                <span>शुभ विवाह बही-खाता (Shagun Register)</span>
+              <h1 className="text-2xl sm:text-3xl font-serif font-black text-amber-50 tracking-wide drop-shadow-xs flex items-center justify-center md:justify-start gap-2">
+                <span>{isHi ? 'शुभ विवाह बही-खाता' : 'Auspicious Wedding Ledger'}</span>
               </h1>
               <p className="text-xs sm:text-sm text-amber-200/90 font-medium">
-                {isDemo ? 'शर्मा परिवार • आरव व दिया का शुभ विवाह (10-12 दिसंबर)' : 'पारंपरिक डिजिटल विवाह डायरी • शगुन, उपहार व लाइव विशलिस्ट'}
+                {isDemo
+                  ? (isHi ? 'शर्मा परिवार • आरव व दिया का शुभ विवाह (10-12 दिसंबर)' : 'Sharma Family • Aarav & Diya Wedding Ceremony')
+                  : (isHi ? 'पारंपरिक डिजिटल विवाह डायरी • शगुन, उपहार व लाइव विशलिस्ट' : 'Traditional Digital Wedding Diary • Cash Shagun, Gift Registry & Reciprocity')}
               </p>
             </div>
 
@@ -412,28 +417,28 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
               <Link href="/gifts/new">
                 <button
                   type="button"
-                  className="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-amber-950 font-bold text-xs shadow-md transition flex items-center gap-1.5"
+                  className="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-amber-950 font-bold text-xs shadow-sm transition flex items-center gap-1.5 cursor-pointer"
                 >
                   <Plus className="h-4 w-4 stroke-[2.5]" />
-                  <span>+ नया शगुन दर्ज करें (Add Shagun)</span>
+                  <span>{isHi ? '+ नया शगुन दर्ज करें' : '+ Add Shagun Entry'}</span>
                 </button>
               </Link>
 
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="px-3 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-amber-100 font-semibold text-xs border border-white/20 transition flex items-center gap-1.5"
-                title="Print ledger register"
+                className="px-3 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-amber-100 font-semibold text-xs border border-white/20 transition flex items-center gap-1.5 cursor-pointer"
+                title={isHi ? 'प्रिंट बही-खाता' : 'Print ledger'}
               >
                 <Printer className="h-4 w-4" />
-                <span className="hidden sm:inline">प्रिंट बही-खाता (Print)</span>
+                <span className="hidden sm:inline">{isHi ? 'प्रिंट' : 'Print'}</span>
               </button>
 
               <a
                 href="/api/export?format=excel"
                 download
-                className="px-3 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-amber-100 font-semibold text-xs border border-white/20 transition flex items-center gap-1.5"
-                title="Download Excel register"
+                className="px-3 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-amber-100 font-semibold text-xs border border-white/20 transition flex items-center gap-1.5 cursor-pointer"
+                title={isHi ? 'Excel में डाउनलोड करें' : 'Download Excel'}
               >
                 <Download className="h-4 w-4" />
                 <span className="hidden sm:inline">Excel</span>
@@ -445,37 +450,37 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-4 pt-4 border-t border-amber-300/20 text-center">
             <div className="p-2 sm:p-2.5 rounded-xl bg-black/20 border border-amber-300/20">
               <span className="text-[10px] uppercase font-bold text-amber-300/90 block">
-                कुल नकद शगुन (Cash)
+                {isHi ? 'कुल नकद शगुन' : 'Total Cash Shagun'}
               </span>
-              <span className="text-lg sm:text-xl font-serif font-black text-white">
+              <span className="text-lg sm:text-xl font-serif font-black text-white tabular-nums font-mono">
                 {formatCurrency(stats.totalCashReceived || 148500)}
               </span>
             </div>
 
             <div className="p-2 sm:p-2.5 rounded-xl bg-black/20 border border-amber-300/20">
               <span className="text-[10px] uppercase font-bold text-amber-300/90 block">
-                कुल लिफाफे (Envelopes)
+                {isHi ? 'कुल लिफ़ाफ़े' : 'Total Envelopes'}
               </span>
-              <span className="text-lg sm:text-xl font-serif font-black text-white">
+              <span className="text-lg sm:text-xl font-serif font-black text-white tabular-nums font-mono">
                 {stats.totalGifts || cashGifts.length || 6}
               </span>
             </div>
 
             <div className="p-2 sm:p-2.5 rounded-xl bg-black/20 border border-amber-300/20">
               <span className="text-[10px] uppercase font-bold text-amber-300/90 block">
-                उपहार सूची बुक (Claimed)
+                {isHi ? 'उपहार सूची बुक' : 'Registry Claimed'}
               </span>
-              <span className="text-lg sm:text-xl font-serif font-black text-amber-300">
+              <span className="text-lg sm:text-xl font-serif font-black text-amber-300 tabular-nums font-mono">
                 {registrySummary.claimedCount} / {registrySummary.totalCount}
               </span>
             </div>
 
             <div className="p-2 sm:p-2.5 rounded-xl bg-black/20 border border-amber-300/20">
               <span className="text-[10px] uppercase font-bold text-amber-300/90 block">
-                उपहार बाकी (Available)
+                {isHi ? 'उपहार बाकी' : 'Available Gifts'}
               </span>
-              <span className="text-lg sm:text-xl font-serif font-black text-emerald-300">
-                {registrySummary.availableCount} बाकी हैं
+              <span className="text-lg sm:text-xl font-serif font-black text-emerald-300 tabular-nums font-mono">
+                {registrySummary.availableCount} {isHi ? 'बाकी हैं' : 'Available'}
               </span>
             </div>
           </div>
@@ -484,21 +489,21 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
         {/* ───────────────────────────────────────────────────────────── */}
         {/* LEDGER TAB NAVIGATION (Authentic Traditional Register Tabs)  */}
         {/* ───────────────────────────────────────────────────────────── */}
-        <div className="bg-[#F6F2E8] border-b border-[#8B1D2C]/20 px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3">
+        <div className="bg-[#F6F2E8] border-b border-[#8B1D2C]/15 px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
             {/* Tab 1: Cash Shagun */}
             <button
               type="button"
               onClick={() => setActiveTab('shagun')}
               className={cn(
-                'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 border',
+                'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 border cursor-pointer',
                 activeTab === 'shagun'
-                  ? 'bg-[#8B1D2C] text-white border-[#8B1D2C] shadow-sm'
+                  ? 'bg-[#8B1D2C] text-white border-[#8B1D2C] shadow-xs'
                   : 'bg-white/80 hover:bg-white text-stone-700 border-stone-300'
               )}
             >
               <BookOpen className="h-4 w-4" />
-              <span>1. नकद शगुन बही-खाता ({cashGifts.length})</span>
+              <span>{isHi ? `1. नकद शगुन बही-खाता (${cashGifts.length})` : `1. Cash Shagun Entries (${cashGifts.length})`}</span>
             </button>
 
             {/* Tab 2: Live Wedding Gift Registry */}
@@ -506,17 +511,17 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
               type="button"
               onClick={() => setActiveTab('registry')}
               className={cn(
-                'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 border',
+                'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 border cursor-pointer',
                 activeTab === 'registry'
-                  ? 'bg-[#8B1D2C] text-white border-[#8B1D2C] shadow-sm'
+                  ? 'bg-[#8B1D2C] text-white border-[#8B1D2C] shadow-xs'
                   : 'bg-white/80 hover:bg-white text-stone-700 border-stone-300'
               )}
             >
               <Gift className="h-4 w-4" />
-              <span>2. लाइव उपहार सूची (Gift Wishlist)</span>
+              <span>{isHi ? '2. लाइव उपहार सूची' : '2. Live Gift Registry'}</span>
               {registrySummary.availableCount > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-600 text-white font-black animate-pulse">
-                  {registrySummary.availableCount} खुला है
+                <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-600 text-white font-black animate-pulse tabular-nums font-mono">
+                  {registrySummary.availableCount} {isHi ? 'खुला' : 'open'}
                 </span>
               )}
             </button>
@@ -526,14 +531,14 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
               type="button"
               onClick={() => setActiveTab('physicalGifts')}
               className={cn(
-                'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 border',
+                'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 border cursor-pointer',
                 activeTab === 'physicalGifts'
-                  ? 'bg-[#8B1D2C] text-white border-[#8B1D2C] shadow-sm'
+                  ? 'bg-[#8B1D2C] text-white border-[#8B1D2C] shadow-xs'
                   : 'bg-white/80 hover:bg-white text-stone-700 border-stone-300'
               )}
             >
               <Tag className="h-4 w-4" />
-              <span>3. प्राप्त उपहार सामान ({physicalGifts.length})</span>
+              <span>{isHi ? `3. प्राप्त उपहार सामान (${physicalGifts.length})` : `3. Physical Gifts Received (${physicalGifts.length})`}</span>
             </button>
 
             {/* Tab 4: Reciprocity */}
@@ -541,14 +546,14 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
               type="button"
               onClick={() => setActiveTab('reciprocity')}
               className={cn(
-                'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 border',
+                'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 border cursor-pointer',
                 activeTab === 'reciprocity'
-                  ? 'bg-[#8B1D2C] text-white border-[#8B1D2C] shadow-sm'
+                  ? 'bg-[#8B1D2C] text-white border-[#8B1D2C] shadow-xs'
                   : 'bg-white/80 hover:bg-white text-stone-700 border-stone-300'
               )}
             >
               <RefreshCw className="h-4 w-4" />
-              <span>4. लेन-देन डायरी ({reciprocityAlerts.length})</span>
+              <span>{isHi ? `4. लेन-देन डायरी (${reciprocityAlerts.length})` : `4. Reciprocity Diary (${reciprocityAlerts.length})`}</span>
             </button>
           </div>
 
@@ -559,14 +564,14 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="खोजें: नाम, रिश्ता, शहर..."
+              placeholder={isHi ? 'खोजें: नाम, रिश्ता, शहर...' : 'Search: name, relation, city...'}
               className="w-full pl-9 pr-3 py-1.5 text-xs bg-white rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-[#8B1D2C]"
             />
           </div>
         </div>
 
         {/* ───────────────────────────────────────────────────────────── */}
-        {/* MAIN NOTEBOOK PAPER CONTENT AREA (पारंपरिक सादा रजिस्टर)        */}
+        {/* MAIN NOTEBOOK PAPER CONTENT AREA                              */}
         {/* ───────────────────────────────────────────────────────────── */}
         <div className="p-4 sm:p-6 lg:p-8 bg-[#FFFDF9] min-h-[520px]">
           {/* ═════════════════════════════════════════════════════════ */}
@@ -577,14 +582,16 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-2 border-b-2 border-[#8B1D2C]/20">
                 <div>
                   <h2 className="text-lg sm:text-xl font-serif font-bold text-[#8B1D2C] flex items-center gap-2">
-                    <span>📖 नकद शगुन प्रविष्टियां (Cash Shagun Entries)</span>
+                    <span>{isHi ? '📖 नकद शगुन प्रविष्टियां' : '📖 Cash Shagun Entries'}</span>
                   </h2>
                   <p className="text-xs text-stone-500">
-                    पारंपरिक बही-खाते के अनुसार रिश्तेदारों द्वारा दिए गए नकद लिफाफों का क्रमबद्ध विवरण
+                    {isHi
+                      ? 'पारंपरिक बही-खाते के अनुसार रिश्तेदारों द्वारा दिए गए नकद लिफाफों का क्रमबद्ध विवरण'
+                      : 'Sequential ledger records of cash envelopes received from relatives'}
                   </p>
                 </div>
                 <div className="text-xs font-serif font-bold text-stone-600 bg-amber-100/70 px-3 py-1 rounded-lg border border-amber-300/50">
-                  कुल योग: <span className="text-[#8B1D2C] text-sm">{formatCurrency(stats.totalCashReceived || 148500)}</span>
+                  {isHi ? 'कुल योग:' : 'Total Sum:'} <span className="text-[#8B1D2C] text-sm tabular-nums font-mono">{formatCurrency(stats.totalCashReceived || 148500)}</span>
                 </div>
               </div>
 
@@ -593,20 +600,22 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                 <table className="w-full text-left text-xs sm:text-sm">
                   <thead>
                     <tr className="bg-[#F8F4EA] border-b border-stone-300 font-serif text-stone-800 text-[11px] sm:text-xs">
-                      <th className="py-2.5 px-3 w-12 text-center">क्र.</th>
-                      <th className="py-2.5 px-3">रिश्तेदार / मेहमान (Guest)</th>
-                      <th className="py-2.5 px-3">रिश्ता / पक्ष</th>
-                      <th className="py-2.5 px-3">शहर / निवास</th>
-                      <th className="py-2.5 px-3 text-right">नकद शगुन (₹)</th>
-                      <th className="py-2.5 px-3">नोटों का विवरण (Breakdown)</th>
-                      <th className="py-2.5 px-3 text-center">लिफाफा</th>
+                      <th className="py-2.5 px-3 w-12 text-center">{isHi ? 'क्र.' : 'S.No.'}</th>
+                      <th className="py-2.5 px-3">{isHi ? 'रिश्तेदार / मेहमान' : 'Guest / Relative'}</th>
+                      <th className="py-2.5 px-3">{isHi ? 'रिश्ता / पक्ष' : 'Relation / Side'}</th>
+                      <th className="py-2.5 px-3">{isHi ? 'शहर / निवास' : 'City / Residence'}</th>
+                      <th className="py-2.5 px-3 text-right">{isHi ? 'नकद शगुन (₹)' : 'Cash Shagun (₹)'}</th>
+                      <th className="py-2.5 px-3">{isHi ? 'नोटों का विवरण' : 'Breakdown'}</th>
+                      <th className="py-2.5 px-3 text-center">{isHi ? 'लिफ़ाफ़ा' : 'Envelope'}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-stone-200 font-sans">
                     {cashGifts.length === 0 ? (
                       <tr>
                         <td colSpan={7} className="py-12 text-center text-stone-400">
-                          कोई नकद शगुन प्रविष्टि नहीं मिली। ऊपर "+ नया शगुन दर्ज करें" पर क्लिक करें।
+                          {isHi
+                            ? 'कोई नकद शगुन प्रविष्टि नहीं मिली। ऊपर "+ नया शगुन दर्ज करें" पर क्लिक करें।'
+                            : 'No cash entries found. Click "+ Add Shagun Entry" above.'}
                         </td>
                       </tr>
                     ) : (
@@ -619,7 +628,7 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                             className="hover:bg-amber-50/50 transition-colors cursor-pointer"
                             onClick={() => setInspectingGift(gift)}
                           >
-                            <td className="py-3 px-3 text-center font-serif text-stone-500">
+                            <td className="py-3 px-3 text-center font-serif text-stone-500 tabular-nums font-mono">
                               {idx + 1}
                             </td>
 
@@ -629,13 +638,13 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                                 <div className="w-7 h-7 rounded-full bg-[#8B1D2C] text-white flex items-center justify-center font-serif text-xs font-bold flex-shrink-0">
                                   {getInitials(guest?.name || 'Guest')}
                                 </div>
-                                <span className="truncate">{guest?.name || 'अतिथि'}</span>
+                                <span className="truncate">{guest?.name || (isHi ? 'अतिथि' : 'Guest')}</span>
                               </div>
                             </td>
 
                             {/* Relation & Side */}
                             <td className="py-3 px-3 text-stone-600">
-                              <span className="capitalize">{guest?.relation?.replace('_', ' ') || 'रिश्तेदार'}</span>
+                              <span className="capitalize">{guest?.relation?.replace('_', ' ') || (isHi ? 'रिश्तेदार' : 'Relative')}</span>
                               {guest?.side && (
                                 <span className="text-[10px] text-stone-400 block">({guest.side.toLowerCase()})</span>
                               )}
@@ -647,19 +656,19 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                             </td>
 
                             {/* Cash Amount */}
-                            <td className="py-3 px-3 text-right font-serif font-black text-emerald-800 sm:text-base">
+                            <td className="py-3 px-3 text-right font-serif font-black text-emerald-800 sm:text-base tabular-nums font-mono">
                               {formatCurrency(gift.cashAmount || 0)}
                             </td>
 
                             {/* Note Breakdown */}
-                            <td className="py-3 px-3 text-[11px] text-stone-600">
+                            <td className="py-3 px-3 text-[11px] text-stone-600 tabular-nums font-mono">
                               {breakdown ? (
                                 Object.entries(breakdown)
                                   .filter(([_, count]) => count > 0)
                                   .map(([denom, count]) => `${count}×₹${denom}`)
-                                  .join(', ') || 'नकद राशि'
+                                  .join(', ') || (isHi ? 'नकद राशि' : 'Cash amount')
                               ) : (
-                                <span className="text-stone-400">एकमुश्त नकद</span>
+                                <span className="text-stone-400">{isHi ? 'एकमुश्त नकद' : 'Lump sum'}</span>
                               )}
                             </td>
 
@@ -671,9 +680,9 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                                   e.stopPropagation();
                                   setInspectingGift(gift);
                                 }}
-                                className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 transition"
+                                className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 transition cursor-pointer"
                               >
-                                लिफाफा खोलें ✉️
+                                {isHi ? 'लिफ़ाफ़ा खोलें ✉️' : 'Open Envelope ✉️'}
                               </button>
                             </td>
                           </tr>
@@ -685,15 +694,15 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                     <tfoot>
                       <tr className="bg-[#F8F4EA] font-serif font-black text-stone-900 border-t-2 border-stone-300">
                         <td colSpan={4} className="py-3 px-3 text-right">
-                          कुल नकद शगुन योग (Grand Total):
+                          {isHi ? 'कुल नकद शगुन योग:' : 'Grand Total Cash Shagun:'}
                         </td>
-                        <td className="py-3 px-3 text-right text-emerald-900 text-base sm:text-lg">
+                        <td className="py-3 px-3 text-right text-emerald-900 text-base sm:text-lg tabular-nums font-mono">
                           {formatCurrency(
                             cashGifts.reduce((sum, g) => sum + (g.cashAmount || 0), 0)
                           )}
                         </td>
                         <td colSpan={2} className="py-3 px-3 text-stone-500 text-xs">
-                          {cashGifts.length} लिफाफे दर्ज
+                          {cashGifts.length} {isHi ? 'लिफ़ाफ़े दर्ज' : 'envelopes recorded'}
                         </td>
                       </tr>
                     </tfoot>
@@ -705,7 +714,6 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
 
           {/* ═════════════════════════════════════════════════════════ */}
           {/* TAB 2: लाइव शादी उपहार सूची (Live Wedding Gift Registry)  */}
-          {/* (POINT 3 REQUESTED BY USER)                              */}
           {/* ═════════════════════════════════════════════════════════ */}
           {activeTab === 'registry' && (
             <div className="space-y-4">
@@ -713,21 +721,22 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 pb-3 border-b-2 border-[#8B1D2C]/20">
                 <div>
                   <h2 className="text-lg sm:text-xl font-serif font-bold text-[#8B1D2C] flex items-center gap-2">
-                    <span>🎁 लाइव शादी उपहार सूची (Live Wedding Gift Registry)</span>
+                    <span>{isHi ? '🎁 लाइव शादी उपहार सूची' : '🎁 Live Wedding Gift Registry'}</span>
                   </h2>
                   <p className="text-xs text-stone-600 max-w-2xl mt-0.5">
-                    डिजिटल उपहार सूची ताकि हर मेहमान देख सके कि <strong>कौन क्या उपहार ला रहा है</strong> और <strong>कौन सा सामान अभी बाकी है</strong>।
-                    इससे एक ही सामान (जैसे मिक्सर या आयरन) दोबारा नहीं आता!
+                    {isHi
+                      ? 'डिजिटल उपहार सूची ताकि हर मेहमान देख सके कि कौन क्या उपहार ला रहा है और कौन सा सामान अभी बाकी है।'
+                      : 'Live gift registry so wedding guests can see which gifts are open and avoid duplicate presents.'}
                   </p>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => setShowAddRegistryModal(true)}
-                  className="px-4 py-2 rounded-xl bg-[#8B1D2C] hover:bg-[#731522] text-white text-xs font-bold shadow-md transition flex items-center gap-1.5 flex-shrink-0"
+                  className="px-4 py-2 rounded-xl bg-[#8B1D2C] hover:bg-[#731522] text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5 flex-shrink-0 cursor-pointer"
                 >
                   <Plus className="h-4 w-4" />
-                  <span>+ नया उपहार जोड़ें (Add Item)</span>
+                  <span>{isHi ? '+ नया उपहार जोड़ें' : '+ Add Registry Item'}</span>
                 </button>
               </div>
 
@@ -735,74 +744,74 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
               <div className="flex items-center gap-2 flex-wrap text-xs">
                 <span className="font-bold text-stone-600 flex items-center gap-1">
                   <Filter className="h-3.5 w-3.5 text-[#8B1D2C]" />
-                  फ़िल्टर:
+                  {isHi ? 'फ़िल्टर:' : 'Filter:'}
                 </span>
                 <button
                   type="button"
                   onClick={() => setRegistryFilter('all')}
                   className={cn(
-                    'px-3 py-1 rounded-full font-bold transition border',
+                    'px-3 py-1 rounded-full font-bold transition border cursor-pointer',
                     registryFilter === 'all'
                       ? 'bg-[#8B1D2C] text-white border-[#8B1D2C]'
                       : 'bg-white text-stone-700 border-stone-300 hover:bg-stone-50'
                   )}
                 >
-                  सभी उपहार ({registrySummary.totalCount})
+                  {isHi ? `सभी उपहार (${registrySummary.totalCount})` : `All Gifts (${registrySummary.totalCount})`}
                 </button>
                 <button
                   type="button"
                   onClick={() => setRegistryFilter('available')}
                   className={cn(
-                    'px-3 py-1 rounded-full font-bold transition border flex items-center gap-1',
+                    'px-3 py-1 rounded-full font-bold transition border flex items-center gap-1 cursor-pointer',
                     registryFilter === 'available'
                       ? 'bg-emerald-700 text-white border-emerald-700'
                       : 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
                   )}
                 >
                   <Sparkles className="h-3 w-3" />
-                  <span>उपलब्ध हैं - कोई भी ला सकता है ({registrySummary.availableCount})</span>
+                  <span>{isHi ? `उपलब्ध हैं (${registrySummary.availableCount})` : `Available (${registrySummary.availableCount})`}</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setRegistryFilter('claimed')}
                   className={cn(
-                    'px-3 py-1 rounded-full font-bold transition border flex items-center gap-1',
+                    'px-3 py-1 rounded-full font-bold transition border flex items-center gap-1 cursor-pointer',
                     registryFilter === 'claimed'
                       ? 'bg-amber-700 text-white border-amber-700'
                       : 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100'
                   )}
                 >
                   <Check className="h-3 w-3" />
-                  <span>बुक हो चुके ({registrySummary.claimedCount})</span>
+                  <span>{isHi ? `बुक हो चुके (${registrySummary.claimedCount})` : `Claimed (${registrySummary.claimedCount})`}</span>
                 </button>
               </div>
 
-              {/* Live Registry Table (Exact columns requested by user) */}
+              {/* Live Registry Table */}
               <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white shadow-xs">
                 <table className="w-full text-left text-xs sm:text-sm">
                   <thead>
                     <tr className="bg-[#F8F4EA] border-b border-stone-300 font-serif text-stone-800 text-[11px] sm:text-xs">
-                      <th className="py-3 px-3 w-10 text-center">क्र.</th>
-                      <th className="py-3 px-4">उपहार / वस्तु (Gift Item)</th>
-                      <th className="py-3 px-3">कहाँ से खरीदें (Store)</th>
-                      <th className="py-3 px-3 text-right">अनुमानित मूल्य (Approx Cost)</th>
-                      <th className="py-3 px-3">कौन ला रहा है? (Who is bringing it?)</th>
-                      <th className="py-3 px-3 text-center">स्थिति (Status)</th>
-                      <th className="py-3 px-4">नोट्स / विवरण (Notes)</th>
-                      <th className="py-3 px-3 text-center">कार्रवाई (Action)</th>
+                      <th className="py-3 px-3 w-10 text-center">{isHi ? 'क्र.' : 'S.No.'}</th>
+                      <th className="py-3 px-4">{isHi ? 'उपहार / वस्तु' : 'Gift Item'}</th>
+                      <th className="py-3 px-3">{isHi ? 'कहाँ से खरीदें' : 'Where to Buy'}</th>
+                      <th className="py-3 px-3 text-right">{isHi ? 'अनुमानित मूल्य' : 'Approx Cost'}</th>
+                      <th className="py-3 px-3">{isHi ? 'कौन ला रहा है?' : 'Claimed By'}</th>
+                      <th className="py-3 px-3 text-center">{isHi ? 'स्थिति' : 'Status'}</th>
+                      <th className="py-3 px-4">{isHi ? 'नोट्स / विवरण' : 'Notes'}</th>
+                      <th className="py-3 px-3 text-center">{isHi ? 'कार्रवाई' : 'Action'}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-stone-200 font-sans">
                     {loadingRegistry ? (
                       <tr>
                         <td colSpan={8} className="py-12 text-center text-stone-400">
-                          उपहार सूची लोड हो रही है...
+                          {isHi ? 'उपहार सूची लोड हो रही है...' : 'Loading gift registry...'}
                         </td>
                       </tr>
                     ) : filteredRegistry.length === 0 ? (
                       <tr>
                         <td colSpan={8} className="py-12 text-center text-stone-400">
-                          कोई उपहार नहीं मिला।
+                          {isHi ? 'कोई उपहार नहीं मिला।' : 'No registry items found.'}
                         </td>
                       </tr>
                     ) : (
@@ -817,7 +826,7 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                             )}
                           >
                             {/* Sr No */}
-                            <td className="py-3.5 px-3 text-center font-serif text-stone-500">
+                            <td className="py-3.5 px-3 text-center font-serif text-stone-500 tabular-nums font-mono">
                               {idx + 1}
                             </td>
 
@@ -845,7 +854,7 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                                       target="_blank"
                                       rel="noreferrer"
                                       className="text-blue-600 hover:text-blue-800"
-                                      title="Open store link"
+                                      title={isHi ? 'स्टोर लिंक खोलें' : 'Open store link'}
                                     >
                                       <ExternalLink className="h-3 w-3" />
                                     </a>
@@ -857,7 +866,7 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                             </td>
 
                             {/* Approx Cost */}
-                            <td className="py-3.5 px-3 text-right font-serif font-black text-stone-900">
+                            <td className="py-3.5 px-3 text-right font-serif font-black text-stone-900 tabular-nums font-mono">
                               {item.approxCost ? formatCurrency(item.approxCost) : '—'}
                             </td>
 
@@ -870,7 +879,7 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                                     <span>{item.claimedBy}</span>
                                   </span>
                                   {item.claimedByPhone && (
-                                    <span className="text-[10px] text-stone-500 block">
+                                    <span className="text-[10px] text-stone-500 block tabular-nums font-mono">
                                       {item.claimedByPhone}
                                     </span>
                                   )}
@@ -878,7 +887,7 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                               ) : (
                                 <span className="text-xs font-semibold text-emerald-700 bg-emerald-100/70 px-2 py-1 rounded-md inline-flex items-center gap-1">
                                   <Sparkles className="h-3 w-3" />
-                                  <span>अभी खुला है (Available)</span>
+                                  <span>{isHi ? 'अभी खुला है' : 'Available'}</span>
                                 </span>
                               )}
                             </td>
@@ -886,12 +895,12 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                             {/* Status */}
                             <td className="py-3.5 px-3 text-center">
                               {isAvailable ? (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
-                                  🟢 उपलब्ध (Open)
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                  {isHi ? '🟢 उपलब्ध' : '🟢 Available'}
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-black bg-amber-100 text-amber-900 border border-amber-300">
-                                  ✓ बुक हो चुका (Claimed)
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                                  {isHi ? '✓ बुक हो चुका' : '✓ Claimed'}
                                 </span>
                               )}
                             </td>
@@ -908,16 +917,16 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                                   <button
                                     type="button"
                                     onClick={() => setClaimingItem(item)}
-                                    className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition flex items-center justify-center gap-1"
+                                    className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition flex items-center justify-center gap-1 cursor-pointer"
                                   >
-                                    <span>{isHi ? 'मैं लाऊँगा/गी' : 'Claim'}</span>
+                                    <span>{isHi ? 'मैं लाऊँगा/गी' : "I'll Bring This"}</span>
                                   </button>
                                 ) : (
                                   <button
                                     type="button"
                                     onClick={() => handleUnclaim(item.id, item.title)}
-                                    className="text-[11px] font-semibold text-stone-500 hover:text-rose-600 underline"
-                                    title="Release claim so others can bring"
+                                    className="text-[11px] font-semibold text-stone-500 hover:text-rose-600 underline cursor-pointer"
+                                    title={isHi ? 'नाम हटाएं ताकि कोई और ला सके' : 'Release claim so others can bring'}
                                   >
                                     {isHi ? 'नाम हटाएं' : 'Unclaim'}
                                   </button>
@@ -927,7 +936,7 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                                 <button
                                   type="button"
                                   onClick={() => openEditModal(item)}
-                                  className="p-1.5 rounded-lg border border-stone-200 text-stone-600 hover:text-[#8B1D2C] hover:bg-amber-50 hover:border-amber-300 transition"
+                                  className="p-1.5 rounded-lg border border-stone-200 text-stone-600 hover:text-[#8B1D2C] hover:bg-amber-50 hover:border-amber-300 transition cursor-pointer"
                                   title={isHi ? 'उपहार विवरण बदलें (Edit)' : 'Edit gift details'}
                                 >
                                   <Pencil className="h-3.5 w-3.5" />
@@ -952,14 +961,16 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-2 border-b-2 border-[#8B1D2C]/20">
                 <div>
                   <h2 className="text-lg sm:text-xl font-serif font-bold text-[#8B1D2C] flex items-center gap-2">
-                    <span>🎁 प्राप्त सामान व वस्तुएं (Physical Gifts Received Log)</span>
+                    <span>{isHi ? '🎁 प्राप्त सामान व वस्तुएं' : '🎁 Physical Gifts Received Log'}</span>
                   </h2>
                   <p className="text-xs text-stone-500">
-                    विवाह में रिश्तेदारों द्वारा भेंट की गई वस्तुओं (चाँदी, इलेक्ट्रॉनिक्स, कपड़े आदि) का विवरण
+                    {isHi
+                      ? 'विवाह में रिश्तेदारों द्वारा भेंट की गई वस्तुओं (चाँदी, इलेक्ट्रॉनिक्स, कपड़े आदि) का विवरण'
+                      : 'Records of physical wedding presents (silverware, electronics, clothing) gifted by guests'}
                   </p>
                 </div>
-                <span className="text-xs font-serif font-bold text-stone-600 bg-amber-100/70 px-3 py-1 rounded-lg">
-                  कुल वस्तुएं: {physicalGifts.length}
+                <span className="text-xs font-serif font-bold text-stone-600 bg-amber-100/70 px-3 py-1 rounded-lg tabular-nums font-mono">
+                  {isHi ? 'कुल वस्तुएं:' : 'Total Items:'} {physicalGifts.length}
                 </span>
               </div>
 
@@ -967,33 +978,33 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                 <table className="w-full text-left text-xs sm:text-sm">
                   <thead>
                     <tr className="bg-[#F8F4EA] border-b border-stone-300 font-serif text-stone-800 text-[11px] sm:text-xs">
-                      <th className="py-2.5 px-3 w-12 text-center">क्र.</th>
-                      <th className="py-2.5 px-3">उपहार देने वाले (Given By)</th>
-                      <th className="py-2.5 px-3">रिश्ता</th>
-                      <th className="py-2.5 px-4">उपहार विवरण (Gift Description)</th>
-                      <th className="py-2.5 px-3">समारोह (Event)</th>
-                      <th className="py-2.5 px-3 text-center">दर्ज स्थिति</th>
+                      <th className="py-2.5 px-3 w-12 text-center">{isHi ? 'क्र.' : 'S.No.'}</th>
+                      <th className="py-2.5 px-3">{isHi ? 'उपहार देने वाले' : 'Presented By'}</th>
+                      <th className="py-2.5 px-3">{isHi ? 'रिश्ता' : 'Relation'}</th>
+                      <th className="py-2.5 px-4">{isHi ? 'उपहार विवरण' : 'Gift Description'}</th>
+                      <th className="py-2.5 px-3">{isHi ? 'समारोह' : 'Occasion'}</th>
+                      <th className="py-2.5 px-3 text-center">{isHi ? 'स्थिति' : 'Status'}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-stone-200 font-sans">
                     {physicalGifts.length === 0 ? (
                       <tr>
                         <td colSpan={6} className="py-12 text-center text-stone-400">
-                          कोई भौतिक उपहार दर्ज नहीं है।
+                          {isHi ? 'कोई भौतिक उपहार दर्ज नहीं है।' : 'No physical gifts recorded yet.'}
                         </td>
                       </tr>
                     ) : (
                       physicalGifts.map((gift, idx) => (
                         <tr key={gift.id} className="hover:bg-amber-50/50 transition-colors">
-                          <td className="py-3 px-3 text-center font-serif text-stone-500">{idx + 1}</td>
-                          <td className="py-3 px-3 font-semibold text-stone-900">{gift.guest?.name || 'अतिथि'}</td>
-                          <td className="py-3 px-3 text-stone-600 capitalize">{gift.guest?.relation?.replace('_', ' ') || 'रिश्तेदार'}</td>
-                          <td className="py-3 px-4 font-bold text-[#8B1D2C]">{gift.giftDescription || 'उपहार सामग्री'}</td>
-                          <td className="py-3 px-3 text-stone-600">{gift.event?.title || 'विवाह समारोह'}</td>
+                          <td className="py-3 px-3 text-center font-serif text-stone-500 tabular-nums font-mono">{idx + 1}</td>
+                          <td className="py-3 px-3 font-semibold text-stone-900">{gift.guest?.name || (isHi ? 'अतिथि' : 'Guest')}</td>
+                          <td className="py-3 px-3 text-stone-600 capitalize">{gift.guest?.relation?.replace('_', ' ') || (isHi ? 'रिश्तेदार' : 'Relative')}</td>
+                          <td className="py-3 px-4 font-bold text-[#8B1D2C]">{gift.giftDescription || (isHi ? 'उपहार सामग्री' : 'Gift Article')}</td>
+                          <td className="py-3 px-3 text-stone-600">{gift.event?.title || (isHi ? 'विवाह समारोह' : 'Wedding Ceremony')}</td>
                           <td className="py-3 px-3 text-center">
                             <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-300">
                               <CheckCircle2 className="h-3 w-3" />
-                              प्राप्त हुआ (Received)
+                              {isHi ? 'प्राप्त हुआ' : 'Received'}
                             </span>
                           </td>
                         </tr>
@@ -1013,10 +1024,12 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-2 border-b-2 border-[#8B1D2C]/20">
                 <div>
                   <h2 className="text-lg sm:text-xl font-serif font-bold text-[#8B1D2C] flex items-center gap-2">
-                    <span>🔄 लेन-देन व वापसी शगुन रजिस्टर (Reciprocity Bahi-Khata)</span>
+                    <span>{isHi ? '🔄 लेन-देन व वापसी शगुन रजिस्टर' : '🔄 Reciprocity & Return Shagun Register'}</span>
                   </h2>
                   <p className="text-xs text-stone-500">
-                    जब रिश्तेदारों के घर कोई समारोह हो, तो बही-खाते के अनुसार शुभ शगुन लौटाने की डायरी
+                    {isHi
+                      ? 'जब रिश्तेदारों के घर कोई समारोह हो, तो बही-खाते के अनुसार शुभ शगुन लौटाने की डायरी'
+                      : 'Smart reciprocity register to return auspicious shagun blessings when invited to relatives’ weddings'}
                   </p>
                 </div>
               </div>
@@ -1025,12 +1038,12 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                 <table className="w-full text-left text-xs sm:text-sm">
                   <thead>
                     <tr className="bg-[#F8F4EA] border-b border-stone-300 font-serif text-stone-800 text-[11px] sm:text-xs">
-                      <th className="py-2.5 px-3 w-12 text-center">क्र.</th>
-                      <th className="py-2.5 px-3">रिश्तेदार का नाम</th>
-                      <th className="py-2.5 px-3">रिश्ता व शहर</th>
-                      <th className="py-2.5 px-3 text-right">हमें प्राप्त शगुन (Received)</th>
-                      <th className="py-2.5 px-3 text-right">सुझावित वापसी (Return +₹1)</th>
-                      <th className="py-2.5 px-3 text-center">स्थिति (Status)</th>
+                      <th className="py-2.5 px-3 w-12 text-center">{isHi ? 'क्र.' : 'S.No.'}</th>
+                      <th className="py-2.5 px-3">{isHi ? 'रिश्तेदार का नाम' : 'Relative Name'}</th>
+                      <th className="py-2.5 px-3">{isHi ? 'रिश्ता व शहर' : 'Relation & City'}</th>
+                      <th className="py-2.5 px-3 text-right">{isHi ? 'हमें प्राप्त शगुन' : 'Received Amount'}</th>
+                      <th className="py-2.5 px-3 text-right">{isHi ? 'सुझावित वापसी (+₹1)' : 'Suggested Return (+₹1)'}</th>
+                      <th className="py-2.5 px-3 text-center">{isHi ? 'स्थिति' : 'Status'}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-stone-200 font-sans">
@@ -1039,21 +1052,21 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                       const returnSuggested = received > 0 ? received + 1 : 0;
                       return (
                         <tr key={gift.id} className="hover:bg-amber-50/50 transition-colors">
-                          <td className="py-3 px-3 text-center font-serif text-stone-500">{idx + 1}</td>
-                          <td className="py-3 px-3 font-semibold text-stone-900">{gift.guest?.name || 'अतिथि'}</td>
+                          <td className="py-3 px-3 text-center font-serif text-stone-500 tabular-nums font-mono">{idx + 1}</td>
+                          <td className="py-3 px-3 font-semibold text-stone-900">{gift.guest?.name || (isHi ? 'अतिथि' : 'Guest')}</td>
                           <td className="py-3 px-3 text-stone-600">
                             {gift.guest?.relation?.replace('_', ' ')} {gift.guest?.city ? `(${gift.guest.city})` : ''}
                           </td>
-                          <td className="py-3 px-3 text-right font-serif font-bold text-stone-800">
+                          <td className="py-3 px-3 text-right font-serif font-bold text-stone-800 tabular-nums font-mono">
                             {formatCurrency(received)}
                           </td>
-                          <td className="py-3 px-3 text-right font-serif font-black text-amber-900">
+                          <td className="py-3 px-3 text-right font-serif font-black text-amber-900 tabular-nums font-mono">
                             {formatCurrency(returnSuggested)}
                           </td>
                           <td className="py-3 px-3 text-center">
                             <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-300">
                               <Clock className="h-3 w-3" />
-                              भविष्य में देय (Pending)
+                              {isHi ? 'भविष्य में देय' : 'Pending Return'}
                             </span>
                           </td>
                         </tr>
@@ -1071,16 +1084,23 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
       {/* MODAL 1: CLAIM A WEDDING GIFT (Guest claiming an item)        */}
       {/* ───────────────────────────────────────────────────────────── */}
       {claimingItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-          <div className="bg-[#FFFDF9] rounded-2xl border-2 border-[#8B1D2C] max-w-md w-full p-6 shadow-2xl space-y-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
+          onClick={() => setClaimingItem(null)}
+        >
+          <div
+            className="bg-[#FFFDF9] rounded-2xl border-2 border-[#8B1D2C] max-w-md w-full p-6 shadow-2xl space-y-4 my-auto relative"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between border-b border-stone-200 pb-2">
               <h3 className="font-serif font-bold text-base text-[#8B1D2C] flex items-center gap-1.5">
-                <span>🎁 यह उपहार बुक करें (Claim Gift)</span>
+                <span>{isHi ? '🎁 यह उपहार बुक करें' : '🎁 Claim Wedding Gift'}</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setClaimingItem(null)}
-                className="text-stone-400 hover:text-stone-700 p-1"
+                className="text-stone-400 hover:text-stone-700 p-1 cursor-pointer"
+                title={isHi ? 'बंद करें' : 'Close'}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1089,59 +1109,62 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
             <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-stone-800 space-y-1">
               <span className="font-bold block text-sm text-[#8B1D2C]">{claimingItem.title}</span>
               <p className="text-stone-600">
-                अनुमानित मूल्य: <strong>{claimingItem.approxCost ? formatCurrency(claimingItem.approxCost) : 'विवरण अनुसार'}</strong>
+                {isHi ? 'अनुमानित मूल्य:' : 'Approx Cost:'}{' '}
+                <strong className="tabular-nums font-mono">
+                  {claimingItem.approxCost ? formatCurrency(claimingItem.approxCost) : (isHi ? 'विवरण अनुसार' : 'As per specs')}
+                </strong>
               </p>
               {claimingItem.suggestedStore && (
-                <p className="text-stone-600">सुझावित स्टोर: {claimingItem.suggestedStore}</p>
+                <p className="text-stone-600">
+                  {isHi ? 'सुझावित स्टोर:' : 'Suggested Store:'} {claimingItem.suggestedStore}
+                </p>
               )}
             </div>
 
             <form onSubmit={handleClaimSubmit} className="space-y-3">
               <div>
                 <label className="block text-xs font-bold text-stone-700 mb-1">
-                  आपका नाम व रिश्ता (Your Name & Relation) *
+                  {isHi ? 'आपका शुभ नाम *' : 'Your Full Name *'}
                 </label>
                 <input
                   type="text"
                   required
                   value={claimantName}
                   onChange={(e) => setClaimantName(e.target.value)}
-                  placeholder="उदा. रमेश चाचाजी / प्रिया मौसी"
+                  placeholder={isHi ? 'उदा. सुनीता बुआ / मामाजी' : 'e.g. Sunita Bua / Uncle'}
                   className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B1D2C]"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-stone-700 mb-1">
-                  मोबाइल नंबर (वैकल्पिक)
+                  {isHi ? 'मोबाइल नंबर (वैकल्पिक)' : 'Phone Number (Optional)'}
                 </label>
                 <input
                   type="tel"
                   value={claimantPhone}
                   onChange={(e) => setClaimantPhone(e.target.value)}
-                  placeholder="+91 98765 00000"
+                  placeholder="9876543210"
                   className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B1D2C]"
                 />
               </div>
 
-              <p className="text-[11px] text-stone-500 leading-relaxed">
-                ✓ आपके द्वारा बुक करने के बाद यह उपहार सूची में &quot;बुक हो चुका&quot; दिखाई देगा ताकि कोई दूसरा मेहमान यही सामान न लाए।
-              </p>
-
-              <div className="flex items-center justify-end gap-2 pt-2">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-stone-200">
                 <button
                   type="button"
                   onClick={() => setClaimingItem(null)}
-                  className="px-4 py-2 rounded-xl border border-stone-300 text-xs font-semibold hover:bg-stone-100"
+                  className="px-4 py-2 rounded-xl border border-stone-300 text-xs font-semibold hover:bg-stone-100 cursor-pointer"
                 >
-                  रद्द करें (Cancel)
+                  {isHi ? 'रद्द करें' : 'Cancel'}
                 </button>
                 <button
                   type="submit"
                   disabled={submittingClaim}
-                  className="px-5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-md"
+                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md cursor-pointer"
                 >
-                  {submittingClaim ? 'दर्ज हो रहा है...' : 'हाँ, मैं यह उपहार लाऊँगा/गी'}
+                  {submittingClaim
+                    ? (isHi ? 'सुरक्षित किया जा रहा है...' : 'Confirming...')
+                    : (isHi ? 'हाँ, यह उपहार मैं लाऊँगा/गी' : 'Confirm Claim')}
                 </button>
               </div>
             </form>
@@ -1150,19 +1173,26 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
       )}
 
       {/* ───────────────────────────────────────────────────────────── */}
-      {/* MODAL 2: ADD NEW ITEM TO LIVE WEDDING GIFT REGISTRY           */}
+      {/* MODAL 2: ADD ITEM TO REGISTRY                                 */}
       {/* ───────────────────────────────────────────────────────────── */}
       {showAddRegistryModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-          <div className="bg-[#FFFDF9] rounded-2xl border-2 border-[#8B1D2C] max-w-lg w-full p-6 shadow-2xl space-y-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto"
+          onClick={() => setShowAddRegistryModal(false)}
+        >
+          <div
+            className="bg-[#FFFDF9] rounded-2xl border-2 border-[#8B1D2C] max-w-lg w-full p-6 shadow-2xl space-y-4 my-auto relative"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between border-b border-stone-200 pb-2">
               <h3 className="font-serif font-bold text-base text-[#8B1D2C] flex items-center gap-1.5">
-                <span>+ उपहार सूची में नई वस्तु जोड़ें (Add to Wishlist)</span>
+                <span>{isHi ? '🎁 शादी उपहार सूची में नया सामान जोड़ें' : '🎁 Add Item to Wedding Registry'}</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setShowAddRegistryModal(false)}
-                className="text-stone-400 hover:text-stone-700 p-1"
+                className="text-stone-400 hover:text-stone-700 p-1 cursor-pointer"
+                title={isHi ? 'बंद करें' : 'Close'}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1171,14 +1201,14 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
             <form onSubmit={handleAddNewItem} className="space-y-3">
               <div>
                 <label className="block text-xs font-bold text-stone-700 mb-1">
-                  उपहार / वस्तु का नाम (Gift Title) *
+                  {isHi ? 'उपहार / वस्तु का नाम *' : 'Gift Item Title *'}
                 </label>
                 <input
                   type="text"
                   required
                   value={newItemTitle}
                   onChange={(e) => setNewItemTitle(e.target.value)}
-                  placeholder="उदा. Philips Air Fryer / Microwave / Silver Thali"
+                  placeholder={isHi ? 'उदा. Philips Air Fryer / Microwave / Silver Thali' : 'e.g. Philips Air Fryer / Dinner Set'}
                   className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B1D2C]"
                 />
               </div>
@@ -1186,31 +1216,31 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-stone-700 mb-1">
-                    श्रेणी (Category)
+                    {isHi ? 'श्रेणी' : 'Category'}
                   </label>
                   <select
                     value={newItemCategory}
                     onChange={(e) => setNewItemCategory(e.target.value)}
                     className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B1D2C]"
                   >
-                    <option value="Kitchen">Kitchen (रसोई)</option>
-                    <option value="Electronics">Electronics (इलेक्ट्रॉनिक्स)</option>
-                    <option value="Home">Home & Decor (घर व साज-सज्जा)</option>
-                    <option value="Gold & Silver">Gold & Silver (सोना-चाँदी)</option>
-                    <option value="Dining">Dining Set (डिनर सेट)</option>
-                    <option value="Other">अन्य (Other)</option>
+                    <option value="Kitchen">{isHi ? 'Kitchen (रसोई)' : 'Kitchen'}</option>
+                    <option value="Electronics">{isHi ? 'Electronics (इलेक्ट्रॉनिक्स)' : 'Electronics'}</option>
+                    <option value="Home">{isHi ? 'Home & Decor (घर व साज-सज्जा)' : 'Home & Decor'}</option>
+                    <option value="Gold & Silver">{isHi ? 'Gold & Silver (सोना-चाँदी)' : 'Gold & Silver'}</option>
+                    <option value="Dining">{isHi ? 'Dining Set (डिनर सेट)' : 'Dining Set'}</option>
+                    <option value="Other">{isHi ? 'अन्य' : 'Other'}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-stone-700 mb-1">
-                    अनुमानित मूल्य ₹ (Approx Cost)
+                    {isHi ? 'अनुमानित मूल्य ₹' : 'Approx Cost (₹)'}
                   </label>
                   <input
                     type="number"
                     value={newItemCost}
                     onChange={(e) => setNewItemCost(e.target.value)}
-                    placeholder="उदा. 7500"
+                    placeholder="7500"
                     className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B1D2C]"
                   />
                 </div>
@@ -1219,20 +1249,20 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-stone-700 mb-1">
-                    सुझावित स्टोर (Suggested Store)
+                    {isHi ? 'सुझावित स्टोर' : 'Suggested Store'}
                   </label>
                   <input
                     type="text"
                     value={newItemStore}
                     onChange={(e) => setNewItemStore(e.target.value)}
-                    placeholder="उदा. Amazon / Croma / Tanishq"
+                    placeholder="Amazon / Croma"
                     className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B1D2C]"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-stone-700 mb-1">
-                    स्टोर लिंक (Web URL)
+                    {isHi ? 'स्टोर लिंक (URL)' : 'Store URL'}
                   </label>
                   <input
                     type="url"
@@ -1246,13 +1276,13 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
 
               <div>
                 <label className="block text-xs font-bold text-stone-700 mb-1">
-                  विशेष विवरण / मॉडल / रंग (Notes)
+                  {isHi ? 'विशेष विवरण / मॉडल / रंग' : 'Notes / Preferences'}
                 </label>
                 <textarea
                   rows={2}
                   value={newItemNotes}
                   onChange={(e) => setNewItemNotes(e.target.value)}
-                  placeholder="उदा. काला रंग, 4.1L क्षमता, मॉडल HD9252"
+                  placeholder={isHi ? 'उदा. काला रंग, 4.1L क्षमता' : 'e.g. Black color, 4.1L capacity'}
                   className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B1D2C]"
                 />
               </div>
@@ -1261,16 +1291,16 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowAddRegistryModal(false)}
-                  className="px-4 py-2 rounded-xl border border-stone-300 text-xs font-semibold hover:bg-stone-100"
+                  className="px-4 py-2 rounded-xl border border-stone-300 text-xs font-semibold hover:bg-stone-100 cursor-pointer"
                 >
-                  रद्द करें (Cancel)
+                  {isHi ? 'रद्द करें' : 'Cancel'}
                 </button>
                 <button
                   type="submit"
                   disabled={submittingNewItem}
-                  className="px-5 py-2 rounded-xl bg-[#8B1D2C] hover:bg-[#731522] text-white text-xs font-bold shadow-md"
+                  className="px-5 py-2 rounded-xl bg-[#8B1D2C] hover:bg-[#731522] text-white text-xs font-bold shadow-md cursor-pointer"
                 >
-                  {submittingNewItem ? 'जोड़ा जा रहा है...' : 'सूची में जोड़ें'}
+                  {submittingNewItem ? (isHi ? 'जोड़ा जा रहा है...' : 'Adding...') : (isHi ? 'सूची में जोड़ें' : 'Add to Registry')}
                 </button>
               </div>
             </form>
@@ -1286,21 +1316,21 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200"
           onClick={() => setInspectingGift(null)}
         >
+          {/* Universal Sticky Top Floating Close Button - Always on screen! */}
+          <button
+            type="button"
+            onClick={() => setInspectingGift(null)}
+            className="fixed top-4 right-4 z-[999] w-11 h-11 rounded-full bg-black/80 hover:bg-black text-white flex items-center justify-center shadow-2xl border-2 border-white/60 transition hover:scale-105 cursor-pointer backdrop-blur-md"
+            aria-label="Close envelope modal"
+            title={isHi ? 'बंद करें (Close Esc)' : 'Close (Esc)'}
+          >
+            <X className="h-6 w-6 stroke-[2.5]" />
+          </button>
+
           <div
-            className="relative max-w-md w-full my-auto"
+            className="relative max-w-md w-full my-auto max-h-[92vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Dedicated Top Floating Close Button - Visible at any scroll */}
-            <button
-              type="button"
-              onClick={() => setInspectingGift(null)}
-              className="absolute -top-3 -right-3 z-50 w-10 h-10 rounded-full bg-stone-900 hover:bg-black text-white flex items-center justify-center shadow-2xl border-2 border-white/40 transition hover:scale-110 cursor-pointer"
-              aria-label="Close"
-              title="बंद करें (Close)"
-            >
-              <X className="h-5 w-5 stroke-[2.5]" />
-            </button>
-
             <AmplifyWoodEnvelope
               gift={inspectingGift}
               headline="SHAGUN"
@@ -1339,7 +1369,8 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
               <button
                 type="button"
                 onClick={() => setEditingItem(null)}
-                className="text-stone-400 hover:text-stone-700 p-1 rounded-lg"
+                className="text-stone-400 hover:text-stone-700 p-1 rounded-lg cursor-pointer"
+                title={isHi ? 'बंद करें' : 'Close'}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1362,7 +1393,7 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-stone-700 font-bold mb-1">
-                    {isHi ? 'श्रेणी (Category)' : 'Category'}
+                    {isHi ? 'श्रेणी' : 'Category'}
                   </label>
                   <select
                     value={editCategory}
@@ -1374,7 +1405,7 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                     <option value="Electronics">{isHi ? 'इलेक्ट्रॉनिक्स (Electronics)' : 'Electronics'}</option>
                     <option value="Gold/Jewellery">{isHi ? 'सोना/चाँदी (Jewellery)' : 'Gold & Jewellery'}</option>
                     <option value="Decor">{isHi ? 'सजावट (Decor)' : 'Decor'}</option>
-                    <option value="Other">{isHi ? 'अन्य (Other)' : 'Other'}</option>
+                    <option value="Other">{isHi ? 'अन्य' : 'Other'}</option>
                   </select>
                 </div>
 
@@ -1423,32 +1454,32 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
               <div className="p-3 rounded-2xl bg-stone-50 border border-stone-200 space-y-2.5">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-stone-800">
-                    {isHi ? 'बुकिंग स्थिति (Status)' : 'Claim Status'}
+                    {isHi ? 'बुकिंग स्थिति' : 'Claim Status'}
                   </span>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => setEditStatus('AVAILABLE')}
                       className={cn(
-                        'px-2.5 py-1 rounded-lg text-[10px] font-bold border transition',
+                        'px-2.5 py-1 rounded-lg text-[10px] font-bold border transition cursor-pointer',
                         editStatus === 'AVAILABLE'
                           ? 'bg-emerald-600 text-white border-emerald-600'
                           : 'bg-white text-stone-600 border-stone-300'
                       )}
                     >
-                      {isHi ? '🟢 उपलब्ध' : 'Available'}
+                      {isHi ? '🟢 उपलब्ध' : '🟢 Available'}
                     </button>
                     <button
                       type="button"
                       onClick={() => setEditStatus('CLAIMED')}
                       className={cn(
-                        'px-2.5 py-1 rounded-lg text-[10px] font-bold border transition',
+                        'px-2.5 py-1 rounded-lg text-[10px] font-bold border transition cursor-pointer',
                         editStatus === 'CLAIMED'
                           ? 'bg-amber-600 text-white border-amber-600'
                           : 'bg-white text-stone-600 border-stone-300'
                       )}
                     >
-                      {isHi ? '✓ बुक है' : 'Claimed'}
+                      {isHi ? '✓ बुक है' : '✓ Claimed'}
                     </button>
                   </div>
                 </div>
@@ -1457,7 +1488,7 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
                   <div className="grid grid-cols-2 gap-2 pt-1">
                     <div>
                       <label className="block text-stone-600 text-[10px] font-semibold mb-0.5">
-                        {isHi ? 'कौन ला रहा है? (Claimant)' : 'Claimed By'}
+                        {isHi ? 'कौन ला रहा है?' : 'Claimed By'}
                       </label>
                       <input
                         type="text"
@@ -1485,41 +1516,42 @@ export const TraditionalBahiKhata: React.FC<TraditionalBahiKhataProps> = ({
 
               <div>
                 <label className="block text-stone-700 font-bold mb-1">
-                  {isHi ? 'नोट्स / विवरण' : 'Notes / Remarks'}
+                  {isHi ? 'विवरण / नोट्स' : 'Notes / Description'}
                 </label>
                 <textarea
                   rows={2}
                   value={editNotes}
                   onChange={(e) => setEditNotes(e.target.value)}
+                  placeholder={isHi ? 'रंग, मॉडल, वारंटी या पसंद' : 'Color, model, size or preferences'}
                   className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B1D2C]"
                 />
               </div>
 
-              <div className="flex items-center justify-between pt-2 border-t border-stone-200">
+              <div className="flex items-center justify-between pt-3 border-t border-stone-200">
                 <button
                   type="button"
-                  disabled={deletingItem}
                   onClick={() => handleDeleteItem(editingItem.id, editingItem.title)}
-                  className="px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 font-bold text-xs flex items-center gap-1 transition"
+                  disabled={deletingItem}
+                  className="px-3 py-2 rounded-xl text-rose-700 hover:bg-rose-50 border border-rose-300 font-bold text-xs flex items-center gap-1 cursor-pointer"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
-                  <span>{isHi ? 'हटाएँ' : 'Delete'}</span>
+                  <span>{deletingItem ? (isHi ? 'हटाया जा रहा है...' : 'Deleting...') : (isHi ? 'हटाएँ' : 'Delete')}</span>
                 </button>
 
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={() => setEditingItem(null)}
-                    className="px-3 py-2 rounded-xl border border-stone-300 text-xs font-semibold hover:bg-stone-100"
+                    className="px-4 py-2 rounded-xl border border-stone-300 text-xs font-semibold hover:bg-stone-100 cursor-pointer"
                   >
                     {isHi ? 'रद्द करें' : 'Cancel'}
                   </button>
                   <button
                     type="submit"
                     disabled={submittingEdit}
-                    className="px-4 py-2 rounded-xl bg-[#8B1D2C] hover:bg-[#731522] text-white text-xs font-bold shadow-md"
+                    className="px-5 py-2 rounded-xl bg-[#8B1D2C] hover:bg-[#731522] text-white text-xs font-bold shadow-md cursor-pointer"
                   >
-                    {submittingEdit ? (isHi ? 'सहेजा जा रहा है...' : 'Saving...') : (isHi ? 'बदलाव सहेजें' : 'Save Changes')}
+                    {submittingEdit ? (isHi ? 'सुरक्षित हो रहा है...' : 'Saving...') : (isHi ? 'सुरक्षित करें' : 'Save Changes')}
                   </button>
                 </div>
               </div>

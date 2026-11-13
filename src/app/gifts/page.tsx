@@ -4,22 +4,25 @@ import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { GiftData } from '@/types';
 import { EnvelopeGrid } from '@/components/envelope/EnvelopeGrid';
+import { CoverflowEnvelopeGallery } from '@/components/envelope/CoverflowEnvelopeGallery';
 import { GiftCard } from '@/components/gift/GiftCard';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Grid, List, Download, Users, BookOpen } from 'lucide-react';
+import { Plus, Grid, List, Download, Sparkles, Layers } from 'lucide-react';
 import { VoiceSearchBar } from '@/components/voice/VoiceSearchBar';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useTheme } from '@/lib/theme/ThemeContext';
+import { saveOfflineCache, getOfflineCache, useOnlineStatus } from '@/lib/offline/offlineStorage';
 import { cn } from '@/utils/cn';
 
 export default function GiftsPage() {
   const { t, language } = useLanguage();
   const { theme } = useTheme();
+  const isOnline = useOnlineStatus();
   const [gifts, setGifts] = useState<GiftData[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [envelopeView, setEnvelopeView] = useState<'coverflow' | 'grid'>('coverflow');
 
   const isTraditional = theme === 'traditional';
 
@@ -28,11 +31,22 @@ export default function GiftsPage() {
       try {
         const res = await fetch('/api/gifts');
         const data = await res.json();
-        if (data.success) {
-          setGifts(data.data || []);
+        if (data.success && Array.isArray(data.data)) {
+          setGifts(data.data);
+          saveOfflineCache('GIFTS', data.data);
+        } else {
+          // Fallback to offline cache
+          const cached = getOfflineCache<GiftData[]>('GIFTS');
+          if (cached && Array.isArray(cached)) {
+            setGifts(cached);
+          }
         }
       } catch (err) {
-        console.error(err);
+        console.warn('Network error fetching gifts, falling back to offline cache:', err);
+        const cached = getOfflineCache<GiftData[]>('GIFTS');
+        if (cached && Array.isArray(cached)) {
+          setGifts(cached);
+        }
       } finally {
         setLoading(false);
       }
@@ -64,6 +78,12 @@ export default function GiftsPage() {
     });
   }, [gifts, searchQuery]);
 
+  const handleGiftUpdated = (updatedGift: GiftData) => {
+    setGifts((prev) =>
+      prev.map((g) => (g.id === updatedGift.id ? { ...g, ...updatedGift } : g))
+    );
+  };
+
   return (
     <div
       className={cn(
@@ -90,11 +110,16 @@ export default function GiftsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-stone-200 dark:border-[#1E2638]">
           <div>
-            <h1 className="text-2xl md:text-3xl font-serif font-black text-[#8B1D2C] dark:text-white">
-              शगुन लिफाफे व उपहार रजिस्टर <span className="font-sans text-base text-stone-500 font-normal">({filteredGifts.length})</span>
-            </h1>
-            <p className="text-xs md:text-sm text-stone-600 dark:text-slate-400 mt-0.5">
-              मेहमानों द्वारा भेंट किए गए 3D लिफाफे (Amplify Wood / Classic Wax Seal) व उपहार
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-2xl md:text-3xl font-serif font-black text-[#8B1D2C] dark:text-white">
+                शगुन लिफाफे व उपहार रजिस्टर
+              </h1>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#8B1D2C]/10 text-[#8B1D2C] dark:bg-amber-400/20 dark:text-amber-300 border border-[#8B1D2C]/20">
+                {filteredGifts.length} लिफाफे
+              </span>
+            </div>
+            <p className="text-xs md:text-sm text-stone-600 dark:text-slate-400 mt-1">
+              मेहमानों द्वारा भेंट किए गए 3D लिफाफे (Motion 3D Odd-Lights Coverflow) व उपहार
             </p>
           </div>
 
@@ -130,10 +155,10 @@ export default function GiftsPage() {
 
         {/* Tabs View */}
         <Tabs defaultValue="envelopes" className="space-y-6">
-          <div className="flex items-center justify-between">
-            <TabsList className="bg-stone-100 p-1 border">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <TabsList className="bg-stone-100 dark:bg-stone-800 p-1 border">
               <TabsTrigger value="envelopes" className="gap-2 text-xs font-bold">
-                <Grid className="h-4 w-4" />
+                <Sparkles className="h-4 w-4 text-amber-600" />
                 <span>3D लिफाफे (Interactive Envelopes)</span>
               </TabsTrigger>
               <TabsTrigger value="list" className="gap-2 text-xs font-bold">
@@ -141,21 +166,58 @@ export default function GiftsPage() {
                 <span>सूची (List View)</span>
               </TabsTrigger>
             </TabsList>
+
+            {/* Sub-view toggle for envelopes: 3D Coverflow vs Uniform Grid */}
+            <div className="flex items-center gap-1.5 bg-stone-100 dark:bg-stone-800/80 p-1 rounded-2xl border border-stone-200 dark:border-stone-700">
+              <button
+                type="button"
+                onClick={() => setEnvelopeView('coverflow')}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer',
+                  envelopeView === 'coverflow'
+                    ? 'bg-white dark:bg-[#1E334D] text-[#8B1D2C] dark:text-[#00E5FF] shadow-xs'
+                    : 'text-stone-500 hover:text-stone-900 dark:text-stone-400'
+                )}
+              >
+                <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                <span>3D Coverflow</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setEnvelopeView('grid')}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer',
+                  envelopeView === 'grid'
+                    ? 'bg-white dark:bg-[#1E334D] text-[#8B1D2C] dark:text-[#00E5FF] shadow-xs'
+                    : 'text-stone-500 hover:text-stone-900 dark:text-stone-400'
+                )}
+              >
+                <Grid className="h-3.5 w-3.5" />
+                <span>समान ग्रिड (Uniform Grid)</span>
+              </button>
+            </div>
           </div>
 
           <TabsContent value="envelopes">
             {loading ? (
-              <div className="text-center py-16 text-stone-400">लिफाफे लोड हो रहे हैं...</div>
+              <div className="text-center py-20 text-stone-400">लिफाफे लोड हो रहे हैं...</div>
             ) : filteredGifts.length === 0 ? (
-              <div className="text-center py-16 border-2 border-dashed border-stone-200 rounded-3xl bg-white text-stone-500 space-y-3">
-                <p className="text-base font-serif font-bold text-stone-800">कोई लिफाफा नहीं मिला</p>
+              <div className="text-center py-16 border-2 border-dashed border-stone-200 dark:border-stone-800 rounded-3xl bg-white dark:bg-stone-900 text-stone-500 space-y-3">
+                <p className="text-base font-serif font-bold text-stone-800 dark:text-white">कोई लिफाफा नहीं मिला</p>
                 <p className="text-xs">रिश्तेदार का नाम खोजें या नया शगुन दर्ज करें</p>
                 <Button variant="outline" size="sm" onClick={() => setSearchQuery('')}>
                   खोज साफ़ करें
                 </Button>
               </div>
+            ) : envelopeView === 'coverflow' ? (
+              <div className="rounded-3xl bg-gradient-to-b from-stone-100/60 to-white/40 dark:from-[#0F172A]/70 dark:to-[#0A0F1D]/80 border border-stone-200/80 dark:border-stone-800/80 p-2 sm:p-4 backdrop-blur-md">
+                <CoverflowEnvelopeGallery
+                  gifts={filteredGifts}
+                  onGiftUpdated={handleGiftUpdated}
+                />
+              </div>
             ) : (
-              <EnvelopeGrid gifts={filteredGifts} />
+              <EnvelopeGrid gifts={filteredGifts} onOpenGift={handleGiftUpdated} />
             )}
           </TabsContent>
 
@@ -163,7 +225,7 @@ export default function GiftsPage() {
             {loading ? (
               <div className="text-center py-16 text-stone-400">सूची लोड हो रही है...</div>
             ) : filteredGifts.length === 0 ? (
-              <div className="text-center py-16 border rounded-xl bg-white text-stone-500">
+              <div className="text-center py-16 border rounded-xl bg-white dark:bg-stone-900 text-stone-500">
                 कोई प्रविष्टि नहीं मिली।
               </div>
             ) : (

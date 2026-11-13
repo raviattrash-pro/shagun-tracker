@@ -2,78 +2,84 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Mic, UserPlus, CalendarPlus, Download, Sparkles } from 'lucide-react';
+import { Mic, UserPlus, CalendarPlus, Download } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export const QuickActions: React.FC = () => {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
+  const isHi = language === 'hi';
+
+  const actions = [
+    {
+      href: '/gifts/new',
+      label: isHi ? 'नया शगुन दर्ज' : 'Record Shagun',
+      sub: isHi ? 'वॉइस या फॉर्म द्वारा' : 'Voice or Quick Entry',
+      icon: Mic,
+      color: 'bg-gradient-to-r from-[#C0392B] to-[#E74C3C] text-white',
+      badge: 'MIC AI',
+    },
+    {
+      href: '/guests/new',
+      label: isHi ? 'अतिथि जोड़ें' : 'Add Guest',
+      sub: isHi ? 'परिवार व रिश्तेदार' : 'Family Directory',
+      icon: UserPlus,
+      color: 'bg-white/80 dark:bg-[#152438] text-slate-800 dark:text-white',
+      badge: 'DIRECTORY',
+    },
+    {
+      href: '/events/new',
+      label: isHi ? 'नया समारोह' : 'New Ceremony',
+      sub: isHi ? 'संगीत / फेरे / रिसेप्शन' : 'Sangeet / Wedding',
+      icon: CalendarPlus,
+      color: 'bg-white/80 dark:bg-[#152438] text-slate-800 dark:text-white',
+      badge: 'EVENT',
+    },
+    {
+      href: '/api/export?format=excel',
+      label: isHi ? 'बहीखाता डाउनलोड' : 'Export Ledger',
+      sub: isHi ? 'Excel / PDF शीट' : 'Excel & PDF Report',
+      icon: Download,
+      color: 'bg-white/80 dark:bg-[#152438] text-slate-800 dark:text-white',
+      badge: 'REPORTS',
+      download: true,
+    },
+  ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-      {/* 1. Add Gift with Voice */}
-      <Link href="/gifts/new" className="block group">
-        <div className="h-20 rounded-2xl p-3.5 bg-gradient-to-tr from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/20 transition-all duration-300 group-hover:scale-[1.02] active:scale-95 flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider opacity-90">Instant Entry</span>
-            <Mic className="h-4 w-4 animate-pulse" />
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+      {actions.map((act, idx) => {
+        const Icon = act.icon;
+        const CardInner = (
+          <div className="aether-card p-4 space-y-3 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                {act.badge}
+              </span>
+              <div className="h-8 w-8 rounded-full bg-[#F5E8DA] dark:bg-white/10 flex items-center justify-center text-[#C0392B] dark:text-[#00E5FF]">
+                <Icon className="h-4 w-4" />
+              </div>
+            </div>
+            <div>
+              <p className="text-sm sm:text-base font-extrabold text-slate-800 dark:text-white leading-tight">
+                {act.label}
+              </p>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+                {act.sub}
+              </p>
+            </div>
           </div>
-          <div>
-            <span className="font-extrabold text-sm sm:text-base leading-tight block">
-              {t('recordShagunAction')}
-            </span>
-            <span className="text-[10px] opacity-80">{t('recordShagunSub')}</span>
-          </div>
-        </div>
-      </Link>
+        );
 
-      {/* 2. Add Guest */}
-      <Link href="/guests/new" className="block group">
-        <div className="h-20 rounded-2xl p-3.5 border border-[#1E2638] bg-[#0F1523] hover:bg-[#131B2E] transition-all duration-300 group-hover:scale-[1.02] active:scale-95 shadow-md flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#4EECD3]">Directory</span>
-            <UserPlus className="h-4 w-4 text-[#4EECD3]" />
-          </div>
-          <div>
-            <span className="font-extrabold text-sm sm:text-base text-white leading-tight block">
-              {t('addGuestAction')}
-            </span>
-            <span className="text-[10px] text-slate-400">{t('addGuestSub')}</span>
-          </div>
-        </div>
-      </Link>
-
-      {/* 3. New Event */}
-      <Link href="/events/new" className="block group">
-        <div className="h-20 rounded-2xl p-3.5 border border-[#1E2638] bg-[#0F1523] hover:bg-[#131B2E] transition-all duration-300 group-hover:scale-[1.02] active:scale-95 shadow-md flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#E6CA65]">Ceremony</span>
-            <CalendarPlus className="h-4 w-4 text-[#E6CA65]" />
-          </div>
-          <div>
-            <span className="font-extrabold text-sm sm:text-base text-white leading-tight block">
-              {t('newEventAction')}
-            </span>
-            <span className="text-[10px] text-slate-400">{t('newEventSub')}</span>
-          </div>
-        </div>
-      </Link>
-
-      {/* 4. Export */}
-      <a href="/api/export?format=excel" download className="block group">
-        <div className="h-20 rounded-2xl p-3.5 border border-[#1E2638] bg-[#0F1523] hover:bg-[#131B2E] transition-all duration-300 group-hover:scale-[1.02] active:scale-95 shadow-md flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Reports</span>
-            <Download className="h-4 w-4 text-slate-300" />
-          </div>
-          <div>
-            <span className="font-extrabold text-sm sm:text-base text-white leading-tight block">
-              {t('exportLedgerAction')}
-            </span>
-            <span className="text-[10px] text-slate-400">{t('exportLedgerSub')}</span>
-          </div>
-        </div>
-      </a>
+        return act.download ? (
+          <a key={idx} href={act.href} download className="block">
+            {CardInner}
+          </a>
+        ) : (
+          <Link key={idx} href={act.href} className="block">
+            {CardInner}
+          </Link>
+        );
+      })}
     </div>
   );
 };

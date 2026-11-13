@@ -3,13 +3,13 @@
 import React, { useState } from 'react';
 import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import { GiftData, GuestData } from '@/types';
-import { formatCurrency } from '@/utils/format';
 import { soundEngine } from '@/utils/audio';
 import { CashReveal } from './CashReveal';
 import { GiftReveal } from './GiftReveal';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, CheckCircle2, IndianRupee, Sparkles, Volume2, VolumeX, X } from 'lucide-react';
+import { RotateCcw, CheckCircle2, IndianRupee, Volume2, VolumeX, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { cn } from '@/utils/cn';
 
 interface AmplifyWoodEnvelopeProps {
@@ -31,6 +31,9 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
   className,
   headline = 'AMPLIFY',
 }) => {
+  const { language } = useLanguage();
+  const isHi = language === 'hi';
+
   const [gift, setGift] = useState<GiftData>(initialGift);
   const [isOpen, setIsOpen] = useState(initialOpen || initialGift.isOpened);
   const [isMuted, setIsMuted] = useState(false);
@@ -38,7 +41,7 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
   const [isHovered, setIsHovered] = useState(false);
 
   const guest = propGuest || gift.guest;
-  const guestName = guest?.name || 'Beloved Guest';
+  const guestName = guest?.name || (isHi ? 'अतिथि / रिश्तेदार' : 'Honored Guest');
 
   const hasCash = (gift.giftType === 'CASH' || gift.giftType === 'BOTH') && gift.cashAmount;
   const hasItem = (gift.giftType === 'GIFT_ITEM' || gift.giftType === 'BOTH') && gift.giftDescription;
@@ -49,15 +52,15 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
   const springY = useSpring(dragY, { stiffness: 280, damping: 26 });
 
   // Dynamic light bloom intensity based on drag distance
-  const lightOpacity = useTransform(dragY, [0, 150], [0.6, 1.0]);
-  const lightScale = useTransform(dragY, [0, 150], [1.0, 1.5]);
-  const sealGlow = useTransform(dragY, [0, 150], [1.0, 1.7]);
+  const lightOpacity = useTransform(dragY, [0, 140], [0.55, 1.0]);
+  const lightScale = useTransform(dragY, [0, 140], [1.0, 1.4]);
+  const sealGlow = useTransform(dragY, [0, 140], [1.0, 1.6]);
 
   const triggerConfetti = () => {
     try {
       confetti({
-        particleCount: 65,
-        spread: 85,
+        particleCount: 55,
+        spread: 80,
         origin: { y: 0.55 },
         colors: ['#F59E0B', '#D97706', '#FEF08A', '#FA837F', '#FFFFFF'],
       });
@@ -67,21 +70,22 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
   const handleOpen = () => {
     if (isOpen) return;
     setIsOpen(true);
-    soundEngine.playUnsealChime();
+    if (!isMuted) soundEngine.playUnsealChime();
     triggerConfetti();
     onOpen?.();
   };
 
   const handleReseal = (e: React.MouseEvent) => {
     e.stopPropagation();
-    soundEngine.playReseal();
+    if (!isMuted) soundEngine.playReseal();
     setIsOpen(false);
     dragY.set(0);
   };
 
   const handleQuickAddAmount = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const input = prompt('Enter shagun cash amount (₹):', '5000');
+    const promptMsg = isHi ? 'शगुन नकद राशि (₹) दर्ज करें:' : 'Enter shagun cash amount (₹):';
+    const input = prompt(promptMsg, '5000');
     if (!input) return;
     const amount = Number(input.replace(/[^0-9]/g, ''));
     if (!amount || isNaN(amount)) return;
@@ -102,35 +106,32 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
         setGift(data.data);
       }
     } catch (err) {
-      alert('Failed to update amount');
+      console.error('Failed to update cash amount', err);
     }
-  };
-
-  const toggleMute = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const next = !isMuted;
-    setIsMuted(next);
-    soundEngine.setMuted(next);
   };
 
   return (
     <div
       className={cn(
-        'group relative w-full max-w-[460px] mx-auto select-none font-sans',
+        'relative w-full max-w-[480px] mx-auto rounded-3xl overflow-hidden shadow-2xl border-4 border-[#3D1D0D]/60 select-none group',
         className
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Outer Luxury Frame matching reference 4:3 ratio */}
-      <div className="relative rounded-[28px] overflow-hidden shadow-[0_24px_50px_rgba(20,10,5,0.45),0_4px_12px_rgba(0,0,0,0.2)] border-2 border-[#5C3317]/50 bg-[#141816]">
-        {/* Top Floating Controls: Sound Toggle & Close Button */}
-        <div className="absolute top-3.5 right-3.5 z-50 flex items-center gap-2">
+      {/* Outer Envelope Wrapper with Wood Framing */}
+      <div className="relative bg-[#200F06] overflow-hidden">
+        {/* Floating Controls: Sound Toggle and Close Button */}
+        <div className="absolute top-3.5 right-3.5 z-40 flex items-center gap-2">
           <button
             type="button"
-            onClick={toggleMute}
-            className="w-8 h-8 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-white/90 hover:text-white flex items-center justify-center transition hover:scale-105 shadow-md"
-            title={isMuted ? 'Unmute sounds' : 'Mute sounds'}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsMuted(!isMuted);
+            }}
+            className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/30 text-white hover:text-amber-300 flex items-center justify-center transition hover:scale-105 shadow-md cursor-pointer"
+            title={isMuted ? (isHi ? 'आवाज़ चालू करें' : 'Unmute') : (isHi ? 'आवाज़ बंद करें' : 'Mute')}
+            aria-label="Toggle envelope sound"
           >
             {isMuted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
           </button>
@@ -139,8 +140,9 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/30 text-white hover:text-amber-300 flex items-center justify-center transition hover:scale-105 shadow-md"
-              title="Close (बंद करें)"
+              className="w-8 h-8 rounded-full bg-black/70 backdrop-blur-md border border-white/40 text-white hover:text-rose-400 flex items-center justify-center transition hover:scale-105 shadow-md cursor-pointer"
+              title={isHi ? 'बंद करें (Close)' : 'Close'}
+              aria-label="Close envelope"
             >
               <X className="h-4 w-4 stroke-[2.5]" />
             </button>
@@ -149,16 +151,15 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
 
         {/* ───────────────────────────────────────────────────────────── */}
         {/* UPPER ZONE: MISTY GREY/WHITE SKY & ORGANIC FOLIAGE CANOPY     */}
-        {/* (Matching exact screenshot media_1793809559758_f138cbc1.jpg) */}
+        {/* (Matching exact reference media_1793809559758_f138cbc1.jpg)   */}
         {/* ───────────────────────────────────────────────────────────── */}
-        <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-gradient-to-b from-[#8C9891] via-[#BAC5BE] to-[#DEE4E0]">
+        <div className="relative h-44 sm:h-48 w-full overflow-hidden bg-gradient-to-b from-[#8C9891] via-[#BAC5BE] to-[#DEE4E0]">
           {/* Subtle Atmospheric Mist Radial Light */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.9)_0%,rgba(220,230,225,0.65)_50%,rgba(170,185,178,0.3)_100%)] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.92)_0%,rgba(220,230,225,0.65)_50%,rgba(170,185,178,0.3)_100%)] pointer-events-none" />
 
-          {/* Lush Tree Foliage along the top & corners (Soft Bokeh framing) */}
+          {/* Lush Tree Foliage along the top & corners (Soft Bokeh framing matching SS) */}
           <div className="absolute -top-12 -left-10 w-72 h-44 pointer-events-none opacity-95 filter blur-[1.5px] transition-transform duration-700 group-hover:scale-105">
             <svg viewBox="0 0 240 160" className="w-full h-full">
-              {/* Organic branch foliage leaves */}
               <ellipse cx="40" cy="20" rx="45" ry="32" fill="#1C301E" />
               <ellipse cx="90" cy="25" rx="38" ry="28" fill="#28442B" />
               <ellipse cx="145" cy="20" rx="32" ry="22" fill="#1E3521" />
@@ -190,9 +191,9 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
           {/* ───────────────────────────────────────────────────────── */}
           {/* CENTER DEBOSSED TEXT: "AMPLIFY" (Exact typography in SS) */}
           {/* ───────────────────────────────────────────────────────── */}
-          <div className="absolute top-20 sm:top-24 left-1/2 -translate-x-1/2 text-center pointer-events-none z-10 w-full px-4">
+          <div className="absolute top-16 sm:top-20 left-1/2 -translate-x-1/2 text-center pointer-events-none z-10 w-full px-4">
             <h2
-              className="text-xl sm:text-2xl font-black tracking-[0.35em] uppercase"
+              className="text-xl sm:text-2xl font-black tracking-[0.35em] uppercase font-serif"
               style={{
                 color: 'rgba(50, 62, 56, 0.85)',
                 textShadow:
@@ -202,10 +203,15 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
               {headline}
             </h2>
             <p
-              className="text-[10px] sm:text-[11px] font-bold tracking-[0.22em] uppercase mt-1 text-slate-600/80"
+              className="text-[11px] font-bold tracking-[0.2em] uppercase mt-1 text-slate-700/80 font-sans"
               style={{ textShadow: '0 1px 1px rgba(255,255,255,0.85)' }}
             >
-              {guestName} {gift.cashAmount ? `• ₹${Number(gift.cashAmount).toLocaleString('en-IN')}` : ''}
+              <span>{guestName}</span>
+              {gift.cashAmount && (
+                <span className="tabular-nums font-mono font-semibold ml-1.5">
+                  • ₹{Number(gift.cashAmount).toLocaleString('en-IN')}
+                </span>
+              )}
             </p>
           </div>
 
@@ -217,31 +223,31 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
               opacity: lightOpacity,
               scale: lightScale,
             }}
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-88 h-32 pointer-events-none z-10 flex items-end justify-center"
+            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-88 h-28 pointer-events-none z-10 flex items-end justify-center"
           >
             {/* Soft Ambient Radiance Bloom */}
-            <div className="w-80 h-24 rounded-full bg-[radial-gradient(ellipse_at_bottom,rgba(255,248,220,1)_0%,rgba(251,191,36,0.85)_35%,rgba(245,158,11,0.35)_60%,transparent_80%)] blur-xl" />
+            <div className="w-80 h-20 rounded-full bg-[radial-gradient(ellipse_at_bottom,rgba(255,248,220,1)_0%,rgba(251,191,36,0.85)_35%,rgba(245,158,11,0.35)_60%,transparent_80%)] blur-xl" />
             {/* Sharp Core Hotspot */}
-            <div className="absolute bottom-0 w-36 h-10 rounded-full bg-white/95 blur-md" />
+            <div className="absolute bottom-0 w-36 h-8 rounded-full bg-white/95 blur-md" />
           </motion.div>
         </div>
 
         {/* ───────────────────────────────────────────────────────────── */}
         {/* LOWER ZONE: LUXURY POLISHED TEAK/WALNUT WOOD BARRIER          */}
         {/* ───────────────────────────────────────────────────────────── */}
-        <div className="relative min-h-[300px] sm:min-h-[320px] bg-[#2E1609]">
+        <div className="relative min-h-[260px] sm:min-h-[280px] bg-[#2E1609]">
           {/* Behind the Flap: The Revealed Inner Shagun Blessing Card */}
           <div className="p-4 sm:p-5 text-slate-800 dark:text-white">
             <div className="rounded-3xl bg-[#FAF8F5] dark:bg-[#111726] p-5 shadow-2xl border-2 border-amber-400/80 space-y-4">
               {/* Auspicious Letterhead Header */}
               <div className="text-center pb-2 border-b border-amber-200 dark:border-amber-900/40 relative">
-                <div className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-tr from-amber-400 to-amber-200 text-amber-950 font-serif font-black text-base mb-1 shadow-md">
+                <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-tr from-amber-400 to-amber-200 text-amber-950 font-serif font-black text-sm mb-1 shadow-md">
                   ॐ
                 </div>
                 <p className="text-[10px] uppercase font-bold tracking-widest text-amber-700 dark:text-amber-400">
-                  Auspicious Shagun Blessing
+                  {isHi ? 'शुभ शगुन आशीर्वाद' : 'Auspicious Shagun Blessing'}
                 </p>
-                <h3 className="text-xl font-serif font-black text-slate-900 dark:text-amber-100 truncate mt-0.5">
+                <h3 className="text-lg font-serif font-black text-slate-900 dark:text-amber-100 truncate mt-0.5">
                   {guestName}
                 </h3>
                 {guest?.relation && (
@@ -271,9 +277,11 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
 
               {/* If Empty */}
               {isEmpty && (
-                <div className="flex flex-col items-center justify-center py-6 text-center space-y-3">
-                  <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-                    No amount or gift item was recorded for this envelope yet.
+                <div className="flex flex-col items-center justify-center py-5 text-center space-y-2.5">
+                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                    {isHi
+                      ? 'इस लिफ़ाफ़े के लिए अभी कोई राशि या उपहार दर्ज नहीं है।'
+                      : 'No amount or gift item was recorded for this envelope yet.'}
                   </p>
                   <Button
                     type="button"
@@ -282,13 +290,13 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
                     className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5 text-xs font-bold rounded-xl shadow-md"
                   >
                     <IndianRupee className="h-3.5 w-3.5" />
-                    <span>Enter Amount (e.g. ₹5,000)</span>
+                    <span>{isHi ? 'राशि दर्ज करें (उदा. ₹5,000)' : 'Enter Amount (e.g. ₹5,000)'}</span>
                   </Button>
                 </div>
               )}
 
               {/* Action Buttons inside revealed card */}
-              <div className="mt-4 flex items-center justify-between border-t border-amber-200 dark:border-amber-900/40 pt-3">
+              <div className="mt-3 flex items-center justify-between border-t border-amber-200 dark:border-amber-900/40 pt-3">
                 <Button
                   type="button"
                   variant="outline"
@@ -297,7 +305,7 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
                   className="text-xs flex items-center gap-1.5 border-amber-300 dark:border-amber-800 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-950/30"
                 >
                   <RotateCcw className="h-3.5 w-3.5 text-amber-600" />
-                  <span>Reseal (दोबारा सील करें)</span>
+                  <span>{isHi ? 'दोबारा सील करें (Reseal)' : 'Reseal Envelope'}</span>
                 </Button>
 
                 {onClose ? (
@@ -307,12 +315,12 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
                     onClick={onClose}
                     className="text-xs bg-[#8B1D2C] hover:bg-[#731522] text-white rounded-xl shadow-xs"
                   >
-                    <span>बंद करें (Close)</span>
+                    <span>{isHi ? 'बंद करें' : 'Close'}</span>
                   </Button>
                 ) : (
                   <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                     <CheckCircle2 className="h-3.5 w-3.5" />
-                    Recorded in ledger
+                    <span>{isHi ? 'बही-खाते में दर्ज' : 'Recorded in ledger'}</span>
                   </span>
                 )}
               </div>
@@ -326,38 +334,38 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
             {!isOpen && (
               <motion.div
                 drag="y"
-                dragConstraints={{ top: 0, bottom: 260 }}
-                dragElastic={0.2}
+                dragConstraints={{ top: 0, bottom: 240 }}
+                dragElastic={0.15}
                 onDragStart={() => {
                   setIsDragging(true);
-                  soundEngine.playWoodSlide();
+                  if (!isMuted) soundEngine.playWoodSlide();
                 }}
                 onDrag={(_, info) => {
                   dragY.set(Math.max(0, info.offset.y));
                 }}
                 onDragEnd={(_, info) => {
                   setIsDragging(false);
-                  if (info.offset.y > 60 || info.velocity.y > 300) {
+                  if (info.offset.y > 50 || info.velocity.y > 250) {
                     handleOpen();
                   } else {
                     dragY.set(0);
-                    soundEngine.playWoodSlide();
+                    if (!isMuted) soundEngine.playWoodSlide();
                   }
                 }}
                 onClick={handleOpen}
                 style={{ y: springY }}
                 initial={{ y: 0 }}
                 exit={{
-                  y: 380,
+                  y: 340,
                   opacity: 0,
-                  transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+                  transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
                 }}
                 className="absolute inset-0 z-30 cursor-grab active:cursor-grabbing select-none"
               >
                 {/* Procedural Realistic Teak Wood + Luminous Curved Crest */}
                 <div className="relative w-full h-full">
                   <svg
-                    viewBox="0 0 400 360"
+                    viewBox="0 0 400 320"
                     preserveAspectRatio="none"
                     className="w-full h-full drop-shadow-[0_-12px_24px_rgba(0,0,0,0.45)] overflow-visible"
                   >
@@ -390,47 +398,47 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
                       </filter>
 
                       {/* Subtle fine vertical wood grain pattern */}
-                      <pattern id="wood-grain-subtle" width="20" height="360" patternUnits="userSpaceOnUse">
-                        <line x1="3" y1="0" x2="3" y2="360" stroke="#3D1C0B" strokeWidth="0.8" opacity="0.35" />
-                        <line x1="8" y1="0" x2="7.5" y2="360" stroke="#B86E35" strokeWidth="0.6" opacity="0.25" />
-                        <line x1="14" y1="0" x2="14.5" y2="360" stroke="#48220E" strokeWidth="0.9" opacity="0.4" />
-                        <line x1="18" y1="0" x2="18" y2="360" stroke="#D48B4C" strokeWidth="0.5" opacity="0.2" />
+                      <pattern id="wood-grain-subtle" width="20" height="320" patternUnits="userSpaceOnUse">
+                        <line x1="3" y1="0" x2="3" y2="320" stroke="#3D1C0B" strokeWidth="0.8" opacity="0.35" />
+                        <line x1="8" y1="0" x2="7.5" y2="320" stroke="#B86E35" strokeWidth="0.6" opacity="0.25" />
+                        <line x1="14" y1="0" x2="14.5" y2="320" stroke="#48220E" strokeWidth="0.9" opacity="0.4" />
+                        <line x1="18" y1="0" x2="18" y2="320" stroke="#D48B4C" strokeWidth="0.5" opacity="0.2" />
                       </pattern>
                     </defs>
 
                     {/* The Wood Flap Body with Smooth Curved Crest */}
-                    {/* Curve: (0, 24) -> (200, 4) -> (400, 24) */}
+                    {/* Curve: (0, 20) -> (200, 4) -> (400, 20) */}
                     <path
-                      d="M 0 24 Q 200 4 400 24 L 400 360 L 0 360 Z"
+                      d="M 0 20 Q 200 4 400 20 L 400 320 L 0 320 Z"
                       fill="url(#wood-base-fine)"
                     />
                     <path
-                      d="M 0 24 Q 200 4 400 24 L 400 360 L 0 360 Z"
+                      d="M 0 20 Q 200 4 400 20 L 400 320 L 0 320 Z"
                       fill="url(#wood-grain-subtle)"
                     />
                     <path
-                      d="M 0 24 Q 200 4 400 24 L 400 360 L 0 360 Z"
+                      d="M 0 20 Q 200 4 400 20 L 400 320 L 0 320 Z"
                       fill="url(#wood-sheen-fine)"
                     />
 
                     {/* Subtle Organic Wood Knots */}
                     <g opacity="0.35">
-                      <ellipse cx="70" cy="120" rx="3.5" ry="9" fill="#200E05" />
-                      <ellipse cx="160" cy="220" rx="3" ry="6" fill="#1A0C04" />
-                      <ellipse cx="310" cy="110" rx="4" ry="10" fill="#241006" />
-                      <ellipse cx="335" cy="180" rx="2" ry="5" fill="#1C0D05" />
+                      <ellipse cx="70" cy="110" rx="3.5" ry="9" fill="#200E05" />
+                      <ellipse cx="160" cy="200" rx="3" ry="6" fill="#1A0C04" />
+                      <ellipse cx="310" cy="100" rx="4" ry="10" fill="#241006" />
+                      <ellipse cx="335" cy="170" rx="2" ry="5" fill="#1C0D05" />
                     </g>
 
                     {/* The Luminous Rim Highlight along curved top */}
                     <path
-                      d="M 0 24 Q 200 4 400 24"
+                      d="M 0 20 Q 200 4 400 20"
                       stroke="#FFFFFF"
                       strokeWidth="2.5"
                       fill="none"
                       filter="url(#rim-glow-fine)"
                     />
                     <path
-                      d="M 0 24 Q 200 4 400 24"
+                      d="M 0 20 Q 200 4 400 20"
                       stroke="#FFFBEB"
                       strokeWidth="1.2"
                       fill="none"
@@ -442,7 +450,7 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
                   {/* Mounted right at the crest apex of the wooden wall*/}
                   {/* ───────────────────────────────────────────────── */}
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-40 pointer-events-none flex flex-col items-center">
-                    {/* White Stylized Hand with 3 vertical lines (matching SS) */}
+                    {/* White Stylized Hand with 3 vertical lines (matching reference) */}
                     <div
                       className={cn(
                         'w-7 h-7 rounded-full bg-white shadow-[0_3px_10px_rgba(0,0,0,0.35),0_0_10px_rgba(255,255,255,0.9)] flex items-center justify-center transition-transform duration-200',
@@ -460,14 +468,14 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
                     {/* Glowing Amber Energy Spark (⚡) right under the hand */}
                     <motion.div
                       style={{ scale: sealGlow }}
-                      className="mt-2.5 relative flex items-center justify-center"
+                      className="mt-2 relative flex items-center justify-center"
                     >
                       {/* Diffuse Amber Radiant Halo */}
-                      <div className="absolute w-10 h-10 rounded-full bg-gradient-to-tr from-[#EA580C] to-[#F59E0B] blur-md opacity-90 animate-pulse" />
+                      <div className="absolute w-9 h-9 rounded-full bg-gradient-to-tr from-[#EA580C] to-[#F59E0B] blur-md opacity-90 animate-pulse" />
 
                       {/* Glowing Golden Lightning Bolt Glyph */}
-                      <div className="relative z-10 w-5 h-5 flex items-center justify-center">
-                        <svg viewBox="0 0 24 24" className="w-4 h-4 fill-amber-300 stroke-amber-500">
+                      <div className="relative z-10 w-4 h-4 flex items-center justify-center">
+                        <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-amber-300 stroke-amber-500">
                           <path d="M 13 2 L 4 14 L 12 14 L 11 22 L 20 10 L 12 10 Z" />
                         </svg>
                       </div>
@@ -475,29 +483,17 @@ export const AmplifyWoodEnvelope: React.FC<AmplifyWoodEnvelopeProps> = ({
                   </div>
 
                   {/* Lower Dedication Plaque & Pull-Down Hint */}
-                  <div className="absolute bottom-5 left-0 right-0 px-6 text-center pointer-events-none">
-                    <div className="inline-block rounded-2xl bg-black/60 backdrop-blur-md px-4 py-2.5 border border-amber-300/30 text-amber-100 shadow-xl max-w-[280px]">
-                      <div className="flex items-center justify-center gap-2 mb-0.5">
-                        <span className="h-px w-4 bg-amber-400/50" />
-                        <span className="text-[9px] font-black uppercase tracking-widest text-amber-300">
-                          Shagun Blessing
-                        </span>
-                        <span className="h-px w-4 bg-amber-400/50" />
-                      </div>
-                      <h4 className="font-serif font-black text-sm sm:text-base text-white truncate">
-                        {guestName}
-                      </h4>
-                      {guest?.relation && (
-                        <p className="text-[10px] text-amber-200/80 capitalize mt-0.5">
-                          ({guest.relation.replace('_', ' ')})
+                  <div className="absolute bottom-4 left-0 right-0 px-6 text-center pointer-events-none">
+                    <div className="inline-block rounded-2xl bg-black/60 backdrop-blur-md px-3.5 py-2 border border-amber-300/30 text-amber-100 shadow-xl max-w-[280px]">
+                      <div className="flex items-center justify-center gap-1.5 mb-0.5">
+                        <span className="text-amber-400 text-xs">↓</span>
+                        <p className="text-[11px] font-bold tracking-wide uppercase">
+                          {isHi ? 'नीचे खींचें या क्लिक करें' : 'Slide down or click to open'}
                         </p>
-                      )}
-                    </div>
-
-                    {/* Pull Down / Swipe to Unseal Hint */}
-                    <div className="mt-2 flex items-center justify-center gap-1.5 text-[11px] font-bold text-amber-200/90 tracking-wide drop-shadow-md">
-                      <Sparkles className="h-3 w-3 text-amber-300 animate-spin" />
-                      <span>Pull down or tap to reveal shagun</span>
+                      </div>
+                      <p className="text-[10px] text-amber-200/80">
+                        {isHi ? 'शगुन लिफ़ाफ़ा खोलें' : 'Unseal Shagun Envelope'}
+                      </p>
                     </div>
                   </div>
                 </div>

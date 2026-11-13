@@ -12,73 +12,53 @@ import { getInitials } from '@/utils/format';
 export default function MobileNav() {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
   const { theme } = useTheme();
 
-  const isTraditional = theme === 'traditional';
-  const isClay = theme === 'clay';
+  const isHi = language === 'hi';
 
   const accountHref = session?.user ? '/profile' : '/login';
   const accountLabel = session?.user
-    ? (language === 'hi' ? 'खाता' : 'Account')
-    : (language === 'hi' ? 'लॉगिन' : 'Sign In');
+    ? (isHi ? 'खाता' : 'Profile')
+    : (isHi ? 'लॉगिन' : 'Sign In');
 
   const tabs = [
-    { href: '/dashboard', label: language === 'hi' ? 'बही-खाता' : 'Bahi-Khata', icon: BookOpen },
-    { href: '/guests', label: language === 'hi' ? 'रिश्तेदार' : 'Guests', icon: Users },
-    { href: '/gifts/new', label: language === 'hi' ? '+ नया शगुन' : '+ Add Shagun', icon: Plus, isCenter: true },
-    { href: '/gifts', label: language === 'hi' ? 'उपहार' : 'Gifts', icon: Gift },
+    { href: '/dashboard', label: isHi ? 'बही-खाता' : 'Bahi-Khata', icon: BookOpen },
+    { href: '/dashboard?tab=registry', label: isHi ? 'उपहार सूची' : 'Registry', icon: Gift },
+    { href: '/gifts/new', label: isHi ? '+ शगुन' : '+ Shagun', icon: Plus, isCenter: true },
+    { href: '/guests', label: isHi ? 'रिश्तेदार' : 'Guests', icon: Users },
     { href: accountHref, label: accountLabel, icon: session?.user ? User : LogIn, isAccount: true },
   ];
 
   return (
     <nav
-      className={cn(
-        'fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl safe-bottom md:hidden shadow-2xl transition-colors duration-300 font-sans',
-        isTraditional
-          ? 'bg-[#FFFDF9]/95 border-t border-[#8B1D2C]/20'
-          : isClay
-          ? 'bg-[#FBF0EE]/95 border-t border-[#F2D7D3]'
-          : 'border-t border-[#1E2638] bg-[#0F1523]/95'
-      )}
+      className="fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl safe-bottom md:hidden shadow-[0_-8px_30px_rgba(0,0,0,0.08)] bg-white/90 dark:bg-[#101E32]/95 border-t border-white/80 dark:border-white/10 transition-colors duration-300 font-sans"
       aria-label="Mobile tab navigation"
     >
-      <div className="mx-auto flex h-16 max-w-lg items-center justify-around px-2">
+      <div className="mx-auto flex h-15 max-w-lg items-center justify-around px-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
-          const isActive =
-            tab.href === '/dashboard'
-              ? pathname === '/dashboard' || pathname === '/'
-              : tab.href === '/gifts/new'
-              ? pathname === '/gifts/new'
-              : pathname.startsWith(tab.href);
+          const isRegistry = tab.href.includes('tab=registry');
+          const isActive = isRegistry
+            ? pathname === '/dashboard' && typeof window !== 'undefined' && window.location.search.includes('tab=registry')
+            : tab.href === '/dashboard'
+            ? (pathname === '/dashboard' || pathname === '/') && !(typeof window !== 'undefined' && window.location.search.includes('tab=registry'))
+            : tab.href === '/gifts/new'
+            ? pathname === '/gifts/new'
+            : pathname.startsWith(tab.href);
 
           if (tab.isCenter) {
             return (
               <Link
                 key={tab.href}
                 href={tab.href}
-                className="relative -mt-6 flex flex-col items-center"
+                className="relative -mt-5 flex flex-col items-center"
                 aria-label={tab.label}
               >
-                <div
-                  className={cn(
-                    'flex h-13 w-13 items-center justify-center rounded-2xl text-white shadow-xl transition-transform active:scale-95',
-                    isTraditional
-                      ? 'bg-gradient-to-tr from-[#7A1522] to-[#8B1D2C] border-2 border-amber-300 shadow-rose-950/40 text-amber-50'
-                      : isClay
-                      ? 'bg-gradient-to-tr from-[#FA837F] to-[#FA726C] border-2 border-white shadow-rose-500/40'
-                      : 'bg-[#2563EB] border-2 border-[#4EECD3]/40 shadow-blue-600/40'
-                  )}
-                >
-                  <Icon className="h-6 w-6 stroke-[3]" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-tr from-[#C0392B] to-[#E74C3C] text-white shadow-lg shadow-[#C0392B]/40 border-2 border-white dark:border-[#101E32] transition-transform active:scale-95">
+                  <Icon className="h-6 w-6 stroke-[2.5]" />
                 </div>
-                <span
-                  className={cn(
-                    'mt-1 text-[10px] font-bold',
-                    isTraditional ? 'text-[#8B1D2C]' : isClay ? 'text-[#FA7C77]' : 'text-[#4EECD3]'
-                  )}
-                >
+                <span className="mt-0.5 text-[9px] font-extrabold text-[#C0392B] dark:text-[#00E5FF]">
                   {tab.label}
                 </span>
               </Link>
@@ -90,22 +70,14 @@ export default function MobileNav() {
               key={tab.href}
               href={tab.href}
               className={cn(
-                'flex flex-col items-center gap-1 px-3 py-1 transition-all',
-                isTraditional
-                  ? isActive
-                    ? 'text-[#8B1D2C] font-bold'
-                    : 'text-stone-500 hover:text-stone-800'
-                  : isClay
-                  ? isActive
-                    ? 'text-[#FA7C77] font-black'
-                    : 'text-slate-500 hover:text-slate-800'
-                  : isActive
-                  ? 'text-[#4EECD3] font-bold'
-                  : 'text-slate-400 hover:text-white'
+                'flex flex-col items-center gap-1 px-2.5 py-1 transition-all',
+                isActive
+                  ? 'text-[#C0392B] dark:text-[#00E5FF] font-extrabold'
+                  : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
               )}
             >
-              <Icon className="h-5 w-5" />
-              <span className="text-[10px] font-medium leading-none">{tab.label}</span>
+              <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="text-[10px] font-bold leading-none">{tab.label}</span>
             </Link>
           );
         })}
