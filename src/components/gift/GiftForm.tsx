@@ -560,14 +560,20 @@ export const GiftForm: React.FC<GiftFormProps> = ({
 
       {/* Input Mode Tabs: Voice or Manual */}
       <Tabs defaultValue="manual" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 rounded-2xl h-12 p-1 bg-muted/60">
-          <TabsTrigger value="manual" className="rounded-xl gap-2 font-semibold">
-            <Keyboard className="h-4 w-4" />
-            <span>{t('manualEntryTab')}</span>
+        <TabsList className="grid w-full grid-cols-2 rounded-2xl h-auto min-h-[44px] p-1 bg-muted/60 overflow-hidden">
+          <TabsTrigger
+            value="manual"
+            className="rounded-xl gap-1.5 font-bold text-xs sm:text-sm px-2 py-2 flex items-center justify-center min-w-0"
+          >
+            <Keyboard className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{t('manualEntryTab')}</span>
           </TabsTrigger>
-          <TabsTrigger value="voice" className="rounded-xl gap-2 text-amber-600 font-bold">
-            <Mic className="h-4 w-4" />
-            <span>{t('voiceCommandTab')}</span>
+          <TabsTrigger
+            value="voice"
+            className="rounded-xl gap-1.5 text-amber-600 dark:text-amber-400 font-bold text-xs sm:text-sm px-2 py-2 flex items-center justify-center min-w-0"
+          >
+            <Mic className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{t('voiceCommandTab')}</span>
           </TabsTrigger>
         </TabsList>
 
@@ -582,33 +588,33 @@ export const GiftForm: React.FC<GiftFormProps> = ({
         <TabsContent value="manual" className="pt-4 space-y-6">
           {/* Gift Type selector */}
           <div className="space-y-2">
-            <Label className="font-semibold text-foreground">{t('giftTypeLabel')}</Label>
-            <div className="grid grid-cols-3 gap-3">
+            <Label className="font-semibold text-foreground text-xs sm:text-sm">{t('giftTypeLabel')}</Label>
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-3">
               <Button
                 type="button"
                 variant={giftType === 'CASH' ? 'default' : 'outline'}
                 onClick={() => setGiftType('CASH')}
-                className="gap-2 rounded-xl font-bold"
+                className="gap-1 sm:gap-2 rounded-xl font-bold text-[11px] sm:text-xs h-10 px-1 sm:px-3 min-w-0"
               >
-                <IndianRupee className="h-4 w-4" />
-                <span>{t('cashOnly')}</span>
+                <IndianRupee className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                <span className="truncate">{t('cashOnly')}</span>
               </Button>
               <Button
                 type="button"
                 variant={giftType === 'GIFT_ITEM' ? 'default' : 'outline'}
                 onClick={() => setGiftType('GIFT_ITEM')}
-                className="gap-2 rounded-xl font-bold"
+                className="gap-1 sm:gap-2 rounded-xl font-bold text-[11px] sm:text-xs h-10 px-1 sm:px-3 min-w-0"
               >
-                <Gift className="h-4 w-4" />
-                <span>{t('giftItemOnly')}</span>
+                <Gift className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                <span className="truncate">{t('giftItemOnly')}</span>
               </Button>
               <Button
                 type="button"
                 variant={giftType === 'BOTH' ? 'default' : 'outline'}
                 onClick={() => setGiftType('BOTH')}
-                className="gap-2 rounded-xl font-bold"
+                className="gap-1 sm:gap-2 rounded-xl font-bold text-[11px] sm:text-xs h-10 px-1 sm:px-3 min-w-0"
               >
-                <span>{t('bothCashAndItem')}</span>
+                <span className="truncate">{t('bothCashAndItem')}</span>
               </Button>
             </div>
           </div>

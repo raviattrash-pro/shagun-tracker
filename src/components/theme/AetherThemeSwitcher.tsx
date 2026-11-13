@@ -18,11 +18,11 @@ export function AetherThemeSwitcher({ className, size = 'md' }: AetherThemeSwitc
       aria-label="Aether Theme Color Palette"
       className={cn(
         'inline-flex items-center gap-1 sm:gap-1.5 rounded-full transition-all duration-300',
-        'bg-black/6 dark:bg-black/35 backdrop-blur-md',
+        'bg-black/6 dark:bg-black/35 backdrop-blur-md flex-shrink-0',
         'border border-white/70 dark:border-white/10',
         'shadow-[inset_0_2px_4px_rgba(0,0,0,0.1),inset_0_-1px_1.5px_rgba(255,255,255,0.7),0_1px_2px_rgba(255,255,255,0.3)]',
         'dark:shadow-[inset_0_2px_5px_rgba(0,0,0,0.5),inset_0_-1px_1px_rgba(255,255,255,0.08)]',
-        size === 'sm' ? 'px-2 py-1' : 'px-2.5 py-1 sm:py-1.5',
+        size === 'sm' ? 'px-1.5 py-0.5' : 'px-1.5 sm:px-2.5 py-0.5 sm:py-1',
         className
       )}
     >
@@ -39,10 +39,12 @@ export function AetherThemeSwitcher({ className, size = 'md' }: AetherThemeSwitc
             title={dot.label}
             onClick={() => setTheme(dot.id)}
             className={cn(
-              'group relative rounded-full transition-all duration-200 ease-out cursor-pointer focus:outline-hidden',
-              size === 'sm' ? 'w-3 h-3 sm:w-3.5 sm:h-3.5' : 'w-3.5 h-3.5 sm:w-4 sm:h-4',
+              'group relative rounded-full transition-all duration-200 ease-out cursor-pointer focus:outline-hidden flex-shrink-0',
+              size === 'sm'
+                ? 'w-2.5 h-2.5 sm:w-3 sm:h-3'
+                : 'w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4',
               isSelected
-                ? 'scale-115 z-10'
+                ? 'scale-120 z-10'
                 : 'hover:scale-110 opacity-90 hover:opacity-100'
             )}
           >
