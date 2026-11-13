@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface GuestFormProps {
   initialValues?: Partial<CreateGuestInput & { photoUrl?: string }>;
@@ -21,6 +22,9 @@ export const GuestForm: React.FC<GuestFormProps> = ({
   onSubmit,
   isLoading = false,
 }) => {
+  const { language } = useLanguage();
+  const isHi = language === 'hi';
+
   const [name, setName] = useState(initialValues?.name || '');
   const [phone, setPhone] = useState(initialValues?.phone || '');
   const [email, setEmail] = useState(initialValues?.email || '');
@@ -51,7 +55,7 @@ export const GuestForm: React.FC<GuestFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 font-sans">
       {/* Photo with Camera capture */}
       <div className="flex flex-col items-center pb-2">
         <GuestPhoto
@@ -60,34 +64,38 @@ export const GuestForm: React.FC<GuestFormProps> = ({
           onPhotoChange={setPhoto}
         />
         <span className="text-xs text-muted-foreground mt-2">
-          Click Camera to take photo or Upload
+          {isHi ? 'फ़ोटो खींचने के लिए कैमरा पर टैप करें या अपलोड करें' : 'Click Camera to take photo or Upload'}
         </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Name */}
         <div className="space-y-2 col-span-1 md:col-span-2">
-          <Label htmlFor="guest-name">Full Name (पूरा नाम) *</Label>
+          <Label htmlFor="guest-name">
+            {isHi ? 'रिश्तेदार का पूरा नाम *' : 'Full Name *'}
+          </Label>
           <Input
             id="guest-name"
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Ramesh Kumar Sharma"
+            placeholder={isHi ? 'उदा. रमेश कुमार शर्मा' : 'e.g. Ramesh Kumar Sharma'}
           />
         </div>
 
         {/* Relation */}
         <div className="space-y-2">
-          <Label htmlFor="guest-relation">Relation (रिश्ता)</Label>
+          <Label htmlFor="guest-relation">
+            {isHi ? 'रिश्ता' : 'Relationship'}
+          </Label>
           <Select value={relation} onValueChange={setRelation}>
             <SelectTrigger id="guest-relation">
-              <SelectValue placeholder="Select relation" />
+              <SelectValue placeholder={isHi ? 'रिश्ता चुनें' : 'Select relation'} />
             </SelectTrigger>
             <SelectContent>
               {RELATION_TYPES.map((r) => (
                 <SelectItem key={r.value} value={r.value}>
-                  {r.label} ({r.labelHindi})
+                  {isHi ? `${r.labelHindi} (${r.label})` : `${r.label} (${r.labelHindi})`}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -96,23 +104,27 @@ export const GuestForm: React.FC<GuestFormProps> = ({
 
         {/* Side */}
         <div className="space-y-2">
-          <Label htmlFor="guest-side">Side (पक्ष)</Label>
+          <Label htmlFor="guest-side">
+            {isHi ? 'पक्ष (वर/वधू)' : 'Side'}
+          </Label>
           <Select value={side} onValueChange={(v) => setSide(v as GuestSide)}>
             <SelectTrigger id="guest-side">
-              <SelectValue placeholder="Select side" />
+              <SelectValue placeholder={isHi ? 'पक्ष चुनें' : 'Select side'} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="GROOM">Groom Side (वर पक्ष)</SelectItem>
-              <SelectItem value="BRIDE">Bride Side (वधू पक्ष)</SelectItem>
-              <SelectItem value="MUTUAL">Mutual (दोनों तरफ से)</SelectItem>
-              <SelectItem value="OTHER">Other</SelectItem>
+              <SelectItem value="GROOM">{isHi ? 'वर पक्ष (लड़का)' : "Groom's Side"}</SelectItem>
+              <SelectItem value="BRIDE">{isHi ? 'वधू पक्ष (लड़की)' : "Bride's Side"}</SelectItem>
+              <SelectItem value="MUTUAL">{isHi ? 'दोनों पक्ष (Mutual)' : 'Mutual / Both'}</SelectItem>
+              <SelectItem value="OTHER">{isHi ? 'अन्य' : 'Other'}</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         {/* Phone */}
         <div className="space-y-2">
-          <Label htmlFor="guest-phone">Phone Number</Label>
+          <Label htmlFor="guest-phone">
+            {isHi ? 'फ़ोन नंबर' : 'Phone Number'}
+          </Label>
           <Input
             id="guest-phone"
             type="tel"
@@ -124,35 +136,41 @@ export const GuestForm: React.FC<GuestFormProps> = ({
 
         {/* City */}
         <div className="space-y-2">
-          <Label htmlFor="guest-city">City / Hometown</Label>
+          <Label htmlFor="guest-city">
+            {isHi ? 'शहर / गाँव' : 'City / Hometown'}
+          </Label>
           <Input
             id="guest-city"
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            placeholder="e.g. Jaipur, Delhi, Mumbai"
+            placeholder={isHi ? 'उदा. जयपुर, दिल्ली, मुंबई' : 'e.g. Jaipur, Delhi, Mumbai'}
           />
         </div>
 
         {/* Address */}
         <div className="space-y-2 col-span-1 md:col-span-2">
-          <Label htmlFor="guest-address">Postal Address</Label>
+          <Label htmlFor="guest-address">
+            {isHi ? 'डाक का पता' : 'Postal Address'}
+          </Label>
           <Textarea
             id="guest-address"
             rows={2}
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            placeholder="House/Street, Area, Pincode"
+            placeholder={isHi ? 'मकान/गली, क्षेत्र, पिनकोड' : 'House/Street, Area, Pincode'}
           />
         </div>
 
         {/* Notes */}
         <div className="space-y-2 col-span-1 md:col-span-2">
-          <Label htmlFor="guest-notes">Personal Notes</Label>
+          <Label htmlFor="guest-notes">
+            {isHi ? 'व्यक्तिगत विवरण / नोट्स' : 'Personal Notes'}
+          </Label>
           <Input
             id="guest-notes"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Any additional details or family tree context"
+            placeholder={isHi ? 'अतिरिक्त विवरण या पारिवारिक संदर्भ' : 'Any additional details or family tree context'}
           />
         </div>
       </div>
@@ -160,9 +178,11 @@ export const GuestForm: React.FC<GuestFormProps> = ({
       <Button
         type="submit"
         disabled={isLoading || !name.trim()}
-        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-base py-5"
+        className="w-full bg-[#8B1D2C] hover:bg-[#731522] text-white font-semibold text-base py-5 rounded-2xl cursor-pointer"
       >
-        {isLoading ? 'Saving...' : 'Save Guest Details'}
+        {isLoading
+          ? isHi ? 'सुरक्षित किया जा रहा है...' : 'Saving...'
+          : isHi ? 'रिश्तेदार सुरक्षित करें' : 'Save Relative Details'}
       </Button>
     </form>
   );

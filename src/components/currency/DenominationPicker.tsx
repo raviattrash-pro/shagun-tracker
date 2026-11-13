@@ -8,6 +8,7 @@ import { CoinDisplay } from './CoinDisplay';
 import { formatCurrency } from '@/utils/format';
 import { Button } from '@/components/ui/button';
 import { Plus, Minus, RotateCcw } from 'lucide-react';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface DenominationPickerProps {
   value: CashBreakdown;
@@ -18,6 +19,9 @@ export const DenominationPicker: React.FC<DenominationPickerProps> = ({
   value,
   onChange,
 }) => {
+  const { language } = useLanguage();
+  const isHi = language === 'hi';
+
   const updateCount = (denom: number, delta: number) => {
     const key = String(denom);
     const current = value[key] || 0;
@@ -46,12 +50,18 @@ export const DenominationPicker: React.FC<DenominationPickerProps> = ({
     <div className="space-y-4 rounded-xl border bg-card p-4 shadow-sm">
       <div className="flex items-center justify-between border-b pb-3">
         <div>
-          <h3 className="font-semibold text-base">Select Denominations (नोट चुनें)</h3>
-          <p className="text-xs text-muted-foreground">Tap + or - to set note and coin counts</p>
+          <h3 className="font-semibold text-base">
+            {isHi ? 'नोट व सिक्के चुनें' : 'Select Denominations'}
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            {isHi ? '+ या - दबाकर नोट और सिक्कों की संख्या तय करें' : 'Tap + or - to set note and coin counts'}
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right">
-            <span className="text-xs text-muted-foreground block">Total Amount</span>
+            <span className="text-xs text-muted-foreground block">
+              {isHi ? 'कुल राशि' : 'Total Amount'}
+            </span>
             <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
               {formatCurrency(total)}
             </span>
@@ -62,7 +72,7 @@ export const DenominationPicker: React.FC<DenominationPickerProps> = ({
               variant="ghost"
               size="icon"
               onClick={handleReset}
-              title="Reset All"
+              title={isHi ? 'रीसेट करें' : 'Reset All'}
             >
               <RotateCcw className="h-4 w-4" />
             </Button>
@@ -73,7 +83,7 @@ export const DenominationPicker: React.FC<DenominationPickerProps> = ({
       {/* Currency Notes */}
       <div>
         <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-          Banknotes (करेंसी नोट)
+          {isHi ? 'करेंसी बैंकनोट' : 'Banknotes'}
         </h4>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {CURRENCY_NOTES.map((n) => {
@@ -117,7 +127,7 @@ export const DenominationPicker: React.FC<DenominationPickerProps> = ({
       {/* Coins */}
       <div className="pt-2 border-t">
         <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-          Coins (सिक्के)
+          {isHi ? 'सिक्के' : 'Coins'}
         </h4>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {CURRENCY_COINS.map((c) => {

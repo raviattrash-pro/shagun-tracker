@@ -20,6 +20,7 @@ export default function GuestsPage() {
   const [loading, setLoading] = useState(true);
 
   const isTraditional = theme === 'traditional';
+  const isHi = language === 'hi';
 
   useEffect(() => {
     async function loadGuests() {
@@ -60,32 +61,37 @@ export default function GuestsPage() {
         {/* Top breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-stone-500 dark:text-slate-400">
           <Link href="/dashboard" className="hover:underline font-semibold flex items-center gap-1 text-[#8B1D2C] dark:text-[#2563EB]">
-            <span>🏠 बही-खाता (Dashboard)</span>
+            <span>{isHi ? '🏠 बही-खाता' : '🏠 Dashboard'}</span>
           </Link>
           <span>/</span>
-          <span className="font-semibold text-stone-900 dark:text-white">रिश्तेदार सूची (Guest Directory)</span>
+          <span className="font-semibold text-stone-900 dark:text-white">
+            {isHi ? 'रिश्तेदार सूची' : 'Guest Directory'}
+          </span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-stone-200 dark:border-[#1E2638]">
           <div>
             <h1 className="text-2xl md:text-3xl font-serif font-black text-[#8B1D2C] dark:text-white">
-              रिश्तेदार व मेहमान सूची <span className="font-sans text-base text-stone-500 font-normal">({guests.length})</span>
+              {isHi ? 'रिश्तेदार व मेहमान सूची' : 'Relatives & Guests Directory'}{' '}
+              <span className="font-sans text-base text-stone-500 font-normal">({guests.length})</span>
             </h1>
             <p className="text-xs md:text-sm text-stone-600 dark:text-slate-400 mt-0.5">
-              परिवार, रिश्तेदार (चाचा, मामा, बुआ, मौसी) एवं मित्रों की संपर्क सूची व कुल शगुन का हिसाब
+              {isHi
+                ? 'परिवार, रिश्तेदार (चाचा, मामा, बुआ, मौसी) एवं मित्रों की संपर्क सूची व कुल शगुन का हिसाब'
+                : 'Contact list and total shagun ledger for family, relatives, and friends'}
             </p>
           </div>
 
           <div className="flex items-center gap-2">
             <Link href="/dashboard">
               <Button variant="outline" size="sm" className="text-xs rounded-xl">
-                बही-खाता
+                {isHi ? 'बही-खाता' : 'Dashboard'}
               </Button>
             </Link>
             <Link href="/guests/new">
               <Button size="sm" className="bg-[#8B1D2C] hover:bg-[#731522] text-white gap-1.5 shadow-sm font-bold rounded-xl text-xs">
                 <UserPlus className="h-4 w-4" />
-                <span>+ नया रिश्तेदार जोड़ें</span>
+                <span>{isHi ? '+ नया रिश्तेदार जोड़ें' : '+ Add Relative'}</span>
               </Button>
             </Link>
           </div>
@@ -95,20 +101,30 @@ export default function GuestsPage() {
         <VoiceSearchBar
           value={search}
           onChange={setSearch}
-          placeholder="रिश्तेदार बोलकर खोजें (उदा. मामाजी, चाचाजी, प्रिया मौसी)..."
+          placeholder={
+            isHi
+              ? 'रिश्तेदार बोलकर खोजें (उदा. मामाजी, चाचाजी, प्रिया मौसी)...'
+              : 'Search relative by voice or text (e.g. Ramesh, Priya, Chacha)...'
+          }
           resultCount={guests.length}
-          resultLabel="रिश्तेदार"
+          resultLabel={isHi ? 'रिश्तेदार' : 'Relatives'}
         />
 
         {loading ? (
-          <div className="text-center py-20 text-stone-400">रिश्तेदार सूची लोड हो रही है...</div>
+          <div className="text-center py-20 text-stone-400">
+            {isHi ? 'रिश्तेदार सूची लोड हो रही है...' : 'Loading guest directory...'}
+          </div>
         ) : guests.length === 0 ? (
           <div className="text-center py-20 border-2 border-dashed border-stone-200 rounded-3xl bg-white text-stone-500 space-y-3">
-            <p className="font-serif font-bold text-lg text-stone-800">कोई रिश्तेदार नहीं मिले</p>
-            <p className="text-xs">नया नाम जोड़ें या दूसरा नाम खोजें</p>
+            <p className="font-serif font-bold text-lg text-stone-800">
+              {isHi ? 'कोई रिश्तेदार नहीं मिले' : 'No relatives found'}
+            </p>
+            <p className="text-xs">
+              {isHi ? 'नया नाम जोड़ें या दूसरा नाम खोजें' : 'Add a new relative or try a different search'}
+            </p>
             <Link href="/guests/new">
               <Button size="sm" className="bg-[#8B1D2C] hover:bg-[#731522] text-white rounded-xl font-bold">
-                + पहला रिश्तेदार जोड़ें
+                {isHi ? '+ पहला रिश्तेदार जोड़ें' : '+ Add First Relative'}
               </Button>
             </Link>
           </div>

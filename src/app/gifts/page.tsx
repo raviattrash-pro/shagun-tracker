@@ -25,6 +25,7 @@ export default function GiftsPage() {
   const [envelopeView, setEnvelopeView] = useState<'coverflow' | 'grid'>('coverflow');
 
   const isTraditional = theme === 'traditional';
+  const isHi = language === 'hi';
 
   useEffect(() => {
     async function loadGifts() {
@@ -101,10 +102,12 @@ export default function GiftsPage() {
         {/* Top breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-stone-500 dark:text-slate-400">
           <Link href="/dashboard" className="hover:underline font-semibold flex items-center gap-1 text-[#8B1D2C] dark:text-[#2563EB]">
-            <span>🏠 बही-खाता (Dashboard)</span>
+            <span>{isHi ? '🏠 बही-खाता' : '🏠 Dashboard'}</span>
           </Link>
           <span>/</span>
-          <span className="font-semibold text-stone-900 dark:text-white">शगुन व लिफाफे (Envelopes)</span>
+          <span className="font-semibold text-stone-900 dark:text-white">
+            {isHi ? 'शगुन व लिफाफे' : 'Shagun & Envelopes'}
+          </span>
         </div>
 
         {/* Header */}
@@ -112,21 +115,23 @@ export default function GiftsPage() {
           <div>
             <div className="flex items-center gap-2.5">
               <h1 className="text-2xl md:text-3xl font-serif font-black text-[#8B1D2C] dark:text-white">
-                शगुन लिफाफे व उपहार रजिस्टर
+                {isHi ? 'शगुन लिफाफे व उपहार रजिस्टर' : 'Shagun Envelopes & Gift Register'}
               </h1>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#8B1D2C]/10 text-[#8B1D2C] dark:bg-amber-400/20 dark:text-amber-300 border border-[#8B1D2C]/20">
-                {filteredGifts.length} लिफाफे
+                {filteredGifts.length} {isHi ? 'लिफाफे' : 'Envelopes'}
               </span>
             </div>
             <p className="text-xs md:text-sm text-stone-600 dark:text-slate-400 mt-1">
-              मेहमानों द्वारा भेंट किए गए 3D लिफाफे (Motion 3D Odd-Lights Coverflow) व उपहार
+              {isHi
+                ? 'मेहमानों द्वारा भेंट किए गए 3D लिफाफे (Motion 3D Odd-Lights Coverflow) व उपहार'
+                : 'Interactive 3D cash envelopes & wedding gifts presented by guests'}
             </p>
           </div>
 
           <div className="flex items-center gap-2">
             <Link href="/dashboard">
               <Button variant="outline" size="sm" className="text-xs rounded-xl">
-                बही-खाता
+                {isHi ? 'बही-खाता' : 'Dashboard'}
               </Button>
             </Link>
             <a href="/api/export?format=excel" download>
@@ -138,7 +143,7 @@ export default function GiftsPage() {
             <Link href="/gifts/new">
               <Button size="sm" className="bg-[#8B1D2C] hover:bg-[#731522] text-white text-xs gap-1.5 shadow-sm font-bold rounded-xl">
                 <Plus className="h-4 w-4" />
-                <span>+ नया शगुन</span>
+                <span>{isHi ? '+ नया शगुन' : '+ Add Shagun'}</span>
               </Button>
             </Link>
           </div>
@@ -148,9 +153,13 @@ export default function GiftsPage() {
         <VoiceSearchBar
           value={searchQuery}
           onChange={setSearchQuery}
-          placeholder="बोलकर खोजें या नाम/रिश्ता लिखें (उदा. मामाजी, चाचाजी, प्रिया मौसी)..."
+          placeholder={
+            isHi
+              ? 'बोलकर खोजें या नाम/रिश्ता लिखें (उदा. मामाजी, चाचाजी, प्रिया मौसी)...'
+              : 'Search by voice or enter relative name/relation...'
+          }
           resultCount={filteredGifts.length}
-          resultLabel="लिफाफे"
+          resultLabel={isHi ? 'लिफाफे' : 'Envelopes'}
         />
 
         {/* Tabs View */}
@@ -159,11 +168,11 @@ export default function GiftsPage() {
             <TabsList className="bg-stone-100 dark:bg-stone-800 p-1 border">
               <TabsTrigger value="envelopes" className="gap-2 text-xs font-bold">
                 <Sparkles className="h-4 w-4 text-amber-600" />
-                <span>3D लिफाफे (Interactive Envelopes)</span>
+                <span>{isHi ? '3D लिफाफे' : '3D Envelopes'}</span>
               </TabsTrigger>
               <TabsTrigger value="list" className="gap-2 text-xs font-bold">
                 <List className="h-4 w-4" />
-                <span>सूची (List View)</span>
+                <span>{isHi ? 'सूची (List View)' : 'List View'}</span>
               </TabsTrigger>
             </TabsList>
 
@@ -193,20 +202,26 @@ export default function GiftsPage() {
                 )}
               >
                 <Grid className="h-3.5 w-3.5" />
-                <span>समान ग्रिड (Uniform Grid)</span>
+                <span>{isHi ? 'समान ग्रिड' : 'Uniform Grid'}</span>
               </button>
             </div>
           </div>
 
           <TabsContent value="envelopes">
             {loading ? (
-              <div className="text-center py-20 text-stone-400">लिफाफे लोड हो रहे हैं...</div>
+              <div className="text-center py-20 text-stone-400">
+                {isHi ? 'लिफाफे लोड हो रहे हैं...' : 'Loading envelopes...'}
+              </div>
             ) : filteredGifts.length === 0 ? (
               <div className="text-center py-16 border-2 border-dashed border-stone-200 dark:border-stone-800 rounded-3xl bg-white dark:bg-stone-900 text-stone-500 space-y-3">
-                <p className="text-base font-serif font-bold text-stone-800 dark:text-white">कोई लिफाफा नहीं मिला</p>
-                <p className="text-xs">रिश्तेदार का नाम खोजें या नया शगुन दर्ज करें</p>
+                <p className="text-base font-serif font-bold text-stone-800 dark:text-white">
+                  {isHi ? 'कोई लिफाफा नहीं मिला' : 'No envelopes found'}
+                </p>
+                <p className="text-xs">
+                  {isHi ? 'रिश्तेदार का नाम खोजें या नया शगुन दर्ज करें' : 'Search relative name or record a new shagun'}
+                </p>
                 <Button variant="outline" size="sm" onClick={() => setSearchQuery('')}>
-                  खोज साफ़ करें
+                  {isHi ? 'खोज साफ़ करें' : 'Clear search'}
                 </Button>
               </div>
             ) : envelopeView === 'coverflow' ? (
@@ -223,10 +238,12 @@ export default function GiftsPage() {
 
           <TabsContent value="list" className="space-y-3">
             {loading ? (
-              <div className="text-center py-16 text-stone-400">सूची लोड हो रही है...</div>
+              <div className="text-center py-16 text-stone-400">
+                {isHi ? 'सूची लोड हो रही है...' : 'Loading list...'}
+              </div>
             ) : filteredGifts.length === 0 ? (
               <div className="text-center py-16 border rounded-xl bg-white dark:bg-stone-900 text-stone-500">
-                कोई प्रविष्टि नहीं मिली।
+                {isHi ? 'कोई प्रविष्टि नहीं मिली।' : 'No entries found.'}
               </div>
             ) : (
               filteredGifts.map((g) => <GiftCard key={g.id} gift={g} />)

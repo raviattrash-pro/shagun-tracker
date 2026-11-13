@@ -251,20 +251,20 @@ export const GiftForm: React.FC<GiftFormProps> = ({
         {/* Event Selector with Quick Add */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label className="font-semibold text-white">{t('selectEvent')}</Label>
+            <Label className="font-semibold text-foreground">{t('selectEvent')}</Label>
             <button
               type="button"
               onClick={() => setShowAddEvent(!showAddEvent)}
               className="inline-flex items-center gap-1 text-xs font-bold text-[#4EECD3] hover:underline"
             >
-              <span>{showAddEvent ? 'Close' : '+ Add Event'}</span>
+              <span>{showAddEvent ? (language === 'hi' ? 'बंद करें' : 'Close') : (language === 'hi' ? '+ नया समारोह' : '+ Add Event')}</span>
             </button>
           </div>
 
           {showAddEvent && (
             <div className="p-3.5 rounded-2xl bg-[#0F1523] border border-[#2563EB]/40 space-y-2.5 animate-in fade-in">
               <Input
-                placeholder="e.g. Wedding Reception (शुभ विवाह)"
+                placeholder={language === 'hi' ? 'उदा. शुभ विवाह / रिसेप्शन' : 'e.g. Wedding Reception'}
                 value={newEventTitle}
                 onChange={(e) => setNewEventTitle(e.target.value)}
                 className="h-9 text-xs rounded-xl bg-[#0B0F19] border-[#1E2638] text-white"
@@ -277,7 +277,7 @@ export const GiftForm: React.FC<GiftFormProps> = ({
                   onClick={() => setShowAddEvent(false)}
                   className="h-7 text-xs text-slate-400"
                 >
-                  Cancel
+                  {t('cancel')}
                 </Button>
                 <Button
                   type="button"
@@ -286,7 +286,7 @@ export const GiftForm: React.FC<GiftFormProps> = ({
                   disabled={isSavingEvent || !newEventTitle.trim()}
                   className="h-7 text-xs bg-[#2563EB] hover:bg-blue-600 text-white rounded-lg font-bold"
                 >
-                  {isSavingEvent ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Save & Select'}
+                  {isSavingEvent ? <Loader2 className="h-3 w-3 animate-spin" /> : t('saveAndSelect')}
                 </Button>
               </div>
             </div>
@@ -294,7 +294,7 @@ export const GiftForm: React.FC<GiftFormProps> = ({
 
           <Select value={selectedEventId} onValueChange={setSelectedEventId} required>
             <SelectTrigger className="h-11 rounded-xl bg-[#0F1523] border-[#1E2638] text-white">
-              <SelectValue placeholder={eventList.length === 0 ? "No events yet — click + Add Event" : "Choose event"} />
+              <SelectValue placeholder={eventList.length === 0 ? (language === 'hi' ? 'कोई समारोह नहीं — + नया समारोह पर क्लिक करें' : 'No events yet — click + Add Event') : (language === 'hi' ? 'समारोह चुनें' : 'Choose event')} />
             </SelectTrigger>
             <SelectContent className="bg-[#0F1523] border-[#1E2638] text-white">
               {eventList.map((e) => (
@@ -309,7 +309,7 @@ export const GiftForm: React.FC<GiftFormProps> = ({
         {/* Guest Selector with Seamless Inline Add Option */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label className="font-semibold text-white">{t('selectGuest')}</Label>
+            <Label className="font-semibold text-foreground">{t('selectGuest')}</Label>
             {/* Prominent Quick Add Relative Button */}
             <button
               type="button"
@@ -361,7 +361,7 @@ export const GiftForm: React.FC<GiftFormProps> = ({
 
             <Select value={selectedGuestId} onValueChange={setSelectedGuestId} required>
               <SelectTrigger className="h-11 rounded-xl bg-[#131B2E] border-[#1E2638] text-white">
-                <SelectValue placeholder="Choose guest from list" />
+                <SelectValue placeholder={language === 'hi' ? 'सूची से रिश्तेदार चुनें' : 'Choose guest from list'} />
               </SelectTrigger>
               <SelectContent className="bg-[#0F1523] border-[#1E2638] text-white">
                 {filteredGuests.length === 0 ? (

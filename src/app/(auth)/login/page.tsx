@@ -9,10 +9,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ShieldCheck, Lock, Sparkles, UserCheck } from 'lucide-react';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { cn } from '@/utils/cn';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { language } = useLanguage();
+  const isHi = language === 'hi';
+
   const [activeTab, setActiveTab] = useState<'google' | 'admin'>('google');
 
   // Admin credentials state
@@ -38,12 +42,20 @@ export default function LoginPage() {
       });
 
       if (res?.error) {
-        setError('Invalid admin credentials. Please check your login ID and password.');
+        setError(
+          isHi
+            ? 'अमान्य एडमिन क्रेडेंशियल। कृपया अपना लॉगिन आईडी और पासवर्ड जांचें।'
+            : 'Invalid admin credentials. Please check your login ID and password.'
+        );
       } else {
         router.push('/dashboard');
       }
     } catch (err: any) {
-      setError('An error occurred during admin sign in');
+      setError(
+        isHi
+          ? 'एडमिन साइन-इन के दौरान त्रुटि हुई'
+          : 'An error occurred during admin sign in'
+      );
     } finally {
       setLoading(false);
     }
@@ -72,12 +84,16 @@ export default function LoginPage() {
       });
 
       if (res?.error) {
-        setError('Fast sign in failed');
+        setError(isHi ? 'त्वरित साइन-इन विफल रहा' : 'Fast sign in failed');
       } else {
         router.push('/dashboard');
       }
     } catch (err) {
-      setError('Failed to sign in with Google demo profile');
+      setError(
+        isHi
+          ? 'Google डेमो प्रोफ़ाइल से साइन इन करने में विफल'
+          : 'Failed to sign in with Google demo profile'
+      );
     } finally {
       setLoading(false);
     }
@@ -90,10 +106,12 @@ export default function LoginPage() {
           ॐ
         </div>
         <CardTitle className="text-2xl font-serif font-bold pt-2 text-slate-900 dark:text-white">
-          Sign In to Shagun Tracker
+          {isHi ? 'शगुन ट्रैकर में लॉगिन करें' : 'Sign In to Shagun Tracker'}
         </CardTitle>
         <CardDescription className="text-xs text-slate-500">
-          Digital Wedding Registry, Shagun Envelopes & Bahi-Khata Ledger
+          {isHi
+            ? 'डिजिटल विवाह उपहार रजिस्ट्री, शगुन लिफाफे और बही-खाता'
+            : 'Digital Wedding Registry, Shagun Envelopes & Bahi-Khata Ledger'}
         </CardDescription>
 
         {/* Tab Switcher: Google Login (All Users) vs Admin Login */}
@@ -109,7 +127,7 @@ export default function LoginPage() {
             )}
           >
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Google Login (Users / Guests)</span>
+            <span>{isHi ? 'गूगल लॉगिन (अतिथि)' : 'Google Login (Users / Guests)'}</span>
           </button>
           <button
             type="button"
@@ -122,7 +140,7 @@ export default function LoginPage() {
             )}
           >
             <Lock className="w-3.5 h-3.5" />
-            <span>Admin Login (Host ID)</span>
+            <span>{isHi ? 'एडमिन लॉगिन (होस्ट ID)' : 'Admin Login (Host ID)'}</span>
           </button>
         </div>
       </CardHeader>
@@ -139,10 +157,12 @@ export default function LoginPage() {
           <div className="space-y-4">
             <div className="rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 p-3.5 border border-amber-200 dark:border-amber-800/40 text-xs text-amber-900 dark:text-amber-200 space-y-1">
               <p className="font-extrabold flex items-center gap-1">
-                <span>🛡️ Anti-Spam Verified Login</span>
+                <span>🛡️ {isHi ? 'एंटी-स्पैम सत्यापित लॉगिन' : 'Anti-Spam Verified Login'}</span>
               </p>
               <p className="text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
-                All guests and relatives must authenticate via Google to confirm wedding gifts. This ensures verified email proof and prevents duplicate or fake entries.
+                {isHi
+                  ? 'सभी मेहमानों और रिश्तेदारों को उपहार की पुष्टि के लिए Google से प्रमाणित होना होता है। इससे वास्तविक ईमेल प्रमाण मिलता है और डुप्लिकेट प्रविष्टियों से सुरक्षा रहती है।'
+                  : 'All guests and relatives must authenticate via Google to confirm wedding gifts. This ensures verified email proof and prevents duplicate or fake entries.'}
               </p>
             </div>
 
@@ -159,14 +179,14 @@ export default function LoginPage() {
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
               </svg>
-              <span>Continue with Google</span>
+              <span>{isHi ? 'गूगल के साथ जारी रखें' : 'Continue with Google'}</span>
             </button>
 
             {/* Fast 1-Click Google Guest Verification Simulator (Instant Demo in Local Dev) */}
             <div className="border-t border-slate-200 dark:border-white/10 pt-3 space-y-2.5">
               <div className="flex items-center justify-between text-[11px] font-extrabold text-slate-500">
-                <span>Fast Google Guest Sign-In (Local Demo)</span>
-                <span className="text-[10px] text-emerald-600 bg-emerald-100 px-1.5 rounded-full">Active</span>
+                <span>{isHi ? 'त्वरित अतिथि लॉगिन (डेमो)' : 'Fast Google Guest Sign-In (Local Demo)'}</span>
+                <span className="text-[10px] text-emerald-600 bg-emerald-100 px-1.5 rounded-full">{isHi ? 'सक्रिय' : 'Active'}</span>
               </div>
 
               <div className="space-y-1.5">
@@ -174,14 +194,14 @@ export default function LoginPage() {
                   type="text"
                   value={guestName}
                   onChange={(e) => setGuestName(e.target.value)}
-                  placeholder="Guest Name (e.g. Ramesh Sharma)"
+                  placeholder={isHi ? 'अतिथि का नाम (जैसे रमेश शर्मा)' : 'Guest Name (e.g. Ramesh Sharma)'}
                   className="text-xs h-9"
                 />
                 <Input
                   type="email"
                   value={guestEmail}
                   onChange={(e) => setGuestEmail(e.target.value)}
-                  placeholder="Guest Gmail (e.g. ramesh@gmail.com)"
+                  placeholder={isHi ? 'अतिथि Gmail (उदा. ramesh@gmail.com)' : 'Guest Gmail (e.g. ramesh@gmail.com)'}
                   className="text-xs h-9"
                 />
               </div>
@@ -191,10 +211,14 @@ export default function LoginPage() {
                 onClick={handleFastGoogleDemoSignIn}
                 disabled={loading}
                 variant="outline"
-                className="w-full text-xs font-bold gap-2 rounded-xl border-emerald-500/40 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-50"
+                className="w-full text-xs font-bold gap-2 rounded-xl border-emerald-500/40 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-50 cursor-pointer"
               >
                 <UserCheck className="w-4 h-4 text-emerald-600" />
-                <span>1-Click Sign In as {guestName.split(' ')[0]} (Google Verified)</span>
+                <span>
+                  {isHi
+                    ? `1-क्लिक प्रवेश: ${guestName.split(' ')[0]} (Google सत्यापित)`
+                    : `1-Click Sign In as ${guestName.split(' ')[0]} (Google Verified)`}
+                </span>
               </Button>
             </div>
           </div>
@@ -204,12 +228,20 @@ export default function LoginPage() {
         {activeTab === 'admin' && (
           <form onSubmit={handleAdminSubmit} className="space-y-4">
             <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/50 p-3 border border-slate-200 dark:border-white/10 text-xs text-slate-600 dark:text-slate-300">
-              <p className="font-extrabold text-slate-900 dark:text-white">Wedding Host & Admin Portal</p>
-              <p className="text-[11px] mt-0.5">Enter your wedding administrator Login ID and Password to manage full bahi-khata ledger and wishlist.</p>
+              <p className="font-extrabold text-slate-900 dark:text-white">
+                {isHi ? 'विवाह व्यवस्थापक व होस्ट पोर्टल' : 'Wedding Host & Admin Portal'}
+              </p>
+              <p className="text-[11px] mt-0.5">
+                {isHi
+                  ? 'पूरा बही-खाता और उपहार सूची प्रबंधित करने के लिए अपना लॉगिन आईडी और पासवर्ड दर्ज करें।'
+                  : 'Enter your wedding administrator Login ID and Password to manage full bahi-khata ledger and wishlist.'}
+              </p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-xs font-extrabold">Admin Email / Login ID</Label>
+              <Label htmlFor="email" className="text-xs font-extrabold">
+                {isHi ? 'एडमिन ईमेल / लॉगिन ID' : 'Admin Email / Login ID'}
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -222,7 +254,9 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-xs font-extrabold">Password</Label>
+              <Label htmlFor="password" className="text-xs font-extrabold">
+                {isHi ? 'पासवर्ड' : 'Password'}
+              </Label>
               <Input
                 id="password"
                 type="password"
@@ -239,7 +273,9 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full bg-[#C0392B] hover:bg-[#A93226] text-white font-extrabold py-5 rounded-2xl shadow-md cursor-pointer"
             >
-              {loading ? 'Authenticating Admin...' : 'Sign In as Admin'}
+              {loading
+                ? isHi ? 'एडमिन सत्यापित किया जा रहा है...' : 'Authenticating Admin...'
+                : isHi ? 'एडमिन के रूप में लॉगिन करें' : 'Sign In as Admin'}
             </Button>
           </form>
         )}

@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Phone, MapPin, ChevronRight, Trash2, Mail, Loader2, Sparkles } from 'lucide-react';
 import { useTheme } from '@/lib/theme/ThemeContext';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { cn } from '@/utils/cn';
 
 interface GuestCardProps {
@@ -19,6 +20,8 @@ interface GuestCardProps {
 export const GuestCard: React.FC<GuestCardProps> = ({ guest, onDelete }) => {
   const router = useRouter();
   const { theme } = useTheme();
+  const { language } = useLanguage();
+  const isHi = language === 'hi';
   const [isDeleting, setIsDeleting] = useState(false);
 
   const isTraditional = theme === 'traditional';
@@ -39,7 +42,9 @@ export const GuestCard: React.FC<GuestCardProps> = ({ guest, onDelete }) => {
     e.stopPropagation();
 
     const confirmed = window.confirm(
-      `Are you sure you want to delete relative "${guest.name}"?\nAll associated gift records and reciprocity entries will also be removed.`
+      isHi
+        ? `क्या आप वाकई रिश्तेदार "${guest.name}" को हटाना चाहते हैं?\nइनके सभी संबंधित शगुन रिकॉर्ड और लेन-देन भी हटा दिए जाएंगे।`
+        : `Are you sure you want to delete relative "${guest.name}"?\nAll associated gift records and reciprocity entries will also be removed.`
     );
     if (!confirmed) return;
 
@@ -168,7 +173,7 @@ export const GuestCard: React.FC<GuestCardProps> = ({ guest, onDelete }) => {
         >
           <div>
             <span className="text-[10px] text-stone-400 block uppercase font-bold tracking-wider">
-              Total Shagun
+              {isHi ? 'कुल शगुन' : 'Total Shagun'}
             </span>
             <span
               className={cn(
@@ -182,7 +187,9 @@ export const GuestCard: React.FC<GuestCardProps> = ({ guest, onDelete }) => {
 
           <div className="flex items-center gap-1 text-stone-400 group-hover:text-stone-700 transition">
             <span className="text-[11px] font-bold">
-              {giftCount} {giftCount === 1 ? 'gift' : 'gifts'}
+              {isHi
+                ? `${giftCount} उपहार`
+                : `${giftCount} ${giftCount === 1 ? 'gift' : 'gifts'}`}
             </span>
             <ChevronRight className="h-4 w-4" />
           </div>
