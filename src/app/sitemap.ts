@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXTAUTH_URL || 'https://shagun-tracker.vercel.app';
+  const rawUrl = process.env.NEXTAUTH_URL || 'https://shagun-tracker-seven.vercel.app';
+  const baseUrl = rawUrl.replace(/\/+$/, '');
   const lastModified = new Date();
 
   return [

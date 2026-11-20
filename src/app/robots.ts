@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXTAUTH_URL || 'https://shagun-tracker.vercel.app';
+  const rawUrl = process.env.NEXTAUTH_URL || 'https://shagun-tracker-seven.vercel.app';
+  const baseUrl = rawUrl.replace(/\/+$/, '');
 
   return {
     rules: [
